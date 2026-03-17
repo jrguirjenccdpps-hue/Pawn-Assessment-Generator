@@ -3,958 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Pawn Transaction Assessment Generator - AML Compliance Tool">
-    <meta name="author" content="Compliance Team">
-    <meta name="timestamp" content="2026-03-17">
-    <title>Pawn Transaction Assessment Generator</title>
+    <title>Pawn Assessment Generator</title>
     <style>
-        :root {
-            --primary: #1e3a5f;
-            --secondary: #2c5282;
-            --accent: #d69e2e;
-            --success: #38a169;
-            --warning: #d69e2e;
-            --danger: #e53e3e;
-            --light: #f7fafc;
-            --dark: #1a202c;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
-
-        .panel:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .panel-header {
-            background: var(--primary);
-            color: white;
-            padding: 20px 25px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 4px solid var(--accent);
-        }
-
-        .panel-body {
-            padding: 25px;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .form-section {
-            margin-bottom: 25px;
-            padding: 20px;
-            background: var(--light);
-            border-radius: 12px;
-            border-left: 4px solid var(--secondary);
-        }
-
-        .section-title {
-            color: var(--primary);
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-
-        .required::after {
-            content: " *";
-            color: var(--danger);
-        }
-
-        input[type="text"],
-        input[type="date"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            background: white;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.15);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 10px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            transition: all 0.2s;
-        }
-
-        .checkbox-item:hover {
-            border-color: var(--secondary);
-            background: #edf2f7;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            margin-top: 3px;
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-item label {
-            margin: 0;
-            font-weight: 400;
-            font-size: 0.85rem;
-            cursor: pointer;
-            line-height: 1.4;
-        }
-
-        .radio-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 10px;
-        }
-
-        .radio-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .radio-item:hover {
-            border-color: var(--secondary);
-        }
-
-        .radio-item input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-        }
-
-        .radio-item label {
-            margin: 0;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #2f855a;
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #b7791f;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-
-        .btn-secondary:hover {
-            background: #cbd5e0;
-            transform: translateY(-2px);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid var(--border);
-        }
-
-        .output-panel {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 12px;
-            padding: 30px;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            min-height: 500px;
-            color: var(--dark);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-        }
-
-        .assessment-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid var(--primary);
-        }
-
-        .assessment-header h2 {
-            color: var(--primary);
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .assessment-date {
-            color: #666;
-            font-size: 0.95rem;
-            font-style: italic;
-        }
-
-        .assessment-body {
-            text-align: justify;
-            margin-bottom: 25px;
-        }
-
-        .assessment-body p {
-            margin-bottom: 16px;
-            text-indent: 0;
-        }
-
-        .verification-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px dashed #cbd5e0;
-        }
-
-        .verification-title {
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.05rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .conclusion {
-            margin-top: 25px;
-            padding: 20px;
-            background: white;
-            border-left: 5px solid var(--accent);
-            border-radius: 0 8px 8px 0;
-            font-style: italic;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-left: auto;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-clean {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .status-monitor {
-            background: #feebc8;
-            color: #744210;
-        }
-
-        .status-suspicious {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .status-reject {
-            background: #e2e8f0;
-            color: #1a202c;
-        }
-
-        .alert-box {
-            background: #fffaf0;
-            border: 1px solid var(--warning);
-            border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 20px;
-        }
-
-        .alert-title {
-            color: var(--warning);
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .highlight {
-            background: #fef3c7;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        /* Print styles */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            .container {
-                display: block;
-            }
-            .panel:first-child {
-                display: none;
-            }
-            .panel:last-child {
-                box-shadow: none;
-                width: 100%;
-                max-width: none;
-                page-break-inside: avoid;
-            }
-            .actions {
-                display: none;
-            }
-            .output-panel {
-                border: none;
-                box-shadow: none;
-                font-size: 12pt;
-                line-height: 1.6;
-            }
-        }
-
-        /* GitHub Pages optimization */
-        .github-badge {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
-        @media print {
-            .github-badge {
-                display: none;
-            }
-        }
+        body { font-family: Arial, sans-serif; max-width: 1400px; margin: 0 auto; padding: 20px; background: #f0f2f5; }
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
+        .panel { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .panel-header { background: #1e3a5f; color: white; padding: 15px 20px; font-weight: bold; }
+        .panel-body { padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .form-section { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #2c5282; }
+        .section-title { color: #1e3a5f; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.85rem; color: #333; }
+        input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
+        textarea { min-height: 60px; resize: vertical; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; padding: 6px; background: white; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .checkbox-item input { width: auto; }
+        .checkbox-item label { margin: 0; font-weight: normal; font-size: 0.8rem; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; margin: 5px; font-size: 0.85rem; }
+        .btn-primary { background: #1e3a5f; color: white; }
+        .btn-success { background: #38a169; color: white; }
+        .btn-warning { background: #d69e2e; color: white; }
+        .btn-secondary { background: #e2e8f0; color: #4a5568; }
+        .actions { margin-top: 20px; padding-top: 15px; border-top: 2px solid #e2e8f0; }
+        .output-panel { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 20px; font-family: Georgia, serif; line-height: 1.6; white-space: pre-wrap; min-height: 400px; }
+        .assessment-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e3a5f; }
+        .assessment-header h2 { color: #1e3a5f; margin: 0; font-size: 1.2rem; }
+        .hidden { display: none !important; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-left: 10px; }
+        .status-clean { background: #c6f6d5; color: #22543d; }
+        .status-monitor { background: #feebc8; color: #744210; }
+        .status-suspicious { background: #fed7d7; color: #742a2a; }
+        .status-reject { background: #e2e8f0; color: #1a202c; }
+        @media print { body { background: white; } .panel:first-child { display: none; } .actions { display: none; } }
     </style>
 <base target="_blank">
 </head>
 <body>
     <div class="container">
-        <!-- INPUT PANEL -->
         <div class="panel">
-            <div class="panel-header">
-                <span>📋</span> Assessment Input Form
-            </div>
+            <div class="panel-header">📋 Assessment Input Form</div>
             <div class="panel-body">
                 <form id="assessmentForm">
-
-                    <!-- Customer Information -->
                     <div class="form-section">
-                        <div class="section-title">👤 Customer Profile</div>
+                        <div class="section-title">Customer Profile</div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label class="required">Customer Name</label>
+                                <label>Customer Name *</label>
                                 <input type="text" id="customerName" placeholder="Lastname, Firstname M." required>
                             </div>
                             <div class="form-group">
-                                <label class="required">Gender</label>
+                                <label>Gender *</label>
                                 <select id="gender" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male (He/Him/His)</option>
-                                    <option value="female">Female (She/Her/Hers)</option>
-                                    <option value="neutral">Neutral (They/Them/Their)</option>
+                                    <option value="">Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="neutral">Neutral</option>
                                 </select>
                             </div>
                         </div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label>Assessment Date</label>
+                                <label>Date</label>
                                 <input type="date" id="assessmentDate">
                             </div>
                             <div class="form-group">
-                                <label class="required">Customer Type</label>
+                                <label>Type *</label>
                                 <select id="customerType" required>
-                                    <option value="UBO">Ultimate Beneficial Owner (UBO)</option>
-                                    <option value="Authorized">Authorized Representative</option>
+                                    <option value="UBO">UBO</option>
+                                    <option value="Authorized">Authorized</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Employment/Business Details -->
                     <div class="form-section">
-                        <div class="section-title">💼 Employment & Business</div>
+                        <div class="section-title">Employment</div>
                         <div class="form-group">
-                            <label class="required">Employment Status</label>
+                            <label>Status *</label>
                             <select id="employmentStatus" required>
-                                <option value="">Select Status</option>
+                                <option value="">Select</option>
                                 <option value="Employed">Employed</option>
-                                <option value="Self-Employed">Self-Employed/Business Owner</option>
-                                <option value="Unemployed">Unemployed</option>
+                                <option value="Self-Employed">Self-Employed</option>
                                 <option value="Retired">Retired</option>
                                 <option value="Student">Student</option>
-                                <option value="Overseas Worker">Overseas Filipino Worker (OFW)</option>
+                                <option value="Overseas Worker">OFW</option>
                             </select>
                         </div>
-
                         <div id="employedFields" class="hidden">
-                            <div class="grid-2">
-                                <div class="form-group">
-                                    <label class="required">Employer/Company Name</label>
-                                    <input type="text" id="employerName" placeholder="Company name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Position/Role</label>
-                                    <input type="text" id="position" placeholder="e.g., Sales Manager">
-                                </div>
+                            <div class="form-group">
+                                <label>Employer Name</label>
+                                <input type="text" id="employerName" placeholder="Company name">
                             </div>
                             <div class="form-group">
-                                <label>Business Industry</label>
-                                <input type="text" id="industry" placeholder="e.g., Retail, Manufacturing, BPO">
+                                <label>Position</label>
+                                <input type="text" id="position" placeholder="Job title">
                             </div>
                         </div>
-
                         <div id="businessFields" class="hidden">
-                            <div class="grid-2">
-                                <div class="form-group">
-                                    <label class="required">Trade Name</label>
-                                    <input type="text" id="tradeName" placeholder="Registered business name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Business Type</label>
-                                    <select id="businessType">
-                                        <option value="">Select Type</option>
-                                        <option value="Sole Proprietorship">Sole Proprietorship</option>
-                                        <option value="Partnership">Partnership</option>
-                                        <option value="Corporation">Corporation</option>
-                                        <option value="Cooperative">Cooperative</option>
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label>Trade Name</label>
+                                <input type="text" id="tradeName" placeholder="Business name">
                             </div>
                             <div class="form-group">
-                                <label>Nature of Business</label>
-                                <input type="text" id="businessNature" placeholder="e.g., Pawnshop, Retail, Trading">
-                            </div>
-                        </div>
-
-                        <div id="ofwFields" class="hidden">
-                            <div class="form-group">
-                                <label class="required">Country of Employment</label>
-                                <input type="text" id="ofwCountry" placeholder="e.g., Saudi Arabia, UAE, Singapore">
-                            </div>
-                            <div class="form-group">
-                                <label>Job Position Abroad</label>
-                                <input type="text" id="ofwPosition" placeholder="e.g., Nurse, Engineer, Domestic Helper">
+                                <label>Nature</label>
+                                <input type="text" id="businessNature" placeholder="e.g., Retail">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Source of Funds -->
                     <div class="form-section">
-                        <div class="section-title">💰 Source of Funds & Assets</div>
+                        <div class="section-title">Source</div>
                         <div class="form-group">
-                            <label class="required">Source of Fund</label>
+                            <label>Source of Fund *</label>
                             <select id="sourceOfFund" required>
-                                <option value="">Select Source</option>
-                                <optgroup label="Income Sources">
-                                    <option value="BUSINESS">BUSINESS - Money earned from business/self-employment</option>
-                                    <option value="SALARY">SALARY - Money received from employer for work</option>
-                                    <option value="ALLOWANCE/REMITTANCE">ALLOWANCE/REMITTANCE - Financial support from family</option>
-                                    <option value="PENSION">PENSION - Regular retirement/disability payments</option>
-                                    <option value="COMMISSION">COMMISSION - Commission earnings</option>
-                                </optgroup>
-                                <optgroup label="Asset Sources">
-                                    <option value="SAVINGS & INVESTMENT">SAVINGS & INVESTMENT - Returns on investments</option>
-                                    <option value="INHERITANCE">INHERITANCE - Funds from deceased relative</option>
-                                </optgroup>
+                                <option value="">Select</option>
+                                <option value="BUSINESS">BUSINESS</option>
+                                <option value="SALARY">SALARY</option>
+                                <option value="ALLOWANCE/REMITTANCE">ALLOWANCE/REMITTANCE</option>
+                                <option value="PENSION">PENSION</option>
+                                <option value="SAVINGS & INVESTMENT">SAVINGS & INVESTMENT</option>
+                                <option value="INHERITANCE">INHERITANCE</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="required">Source of Jewelry</label>
+                            <label>Source of Jewelry *</label>
                             <select id="sourceOfJewelry" required>
-                                <option value="">Select Source</option>
-                                <option value="Personal">Personal - Owned by customer</option>
+                                <option value="">Select</option>
+                                <option value="Personal">Personal</option>
                                 <option value="Business">Business</option>
                                 <option value="Salary">Salary</option>
                                 <option value="Allowance/Remittance">Allowance/Remittance</option>
                                 <option value="Pension">Pension</option>
                                 <option value="Savings & Investment">Savings & Investment</option>
                                 <option value="Inheritance">Inheritance</option>
-                                <option value="Third Party">From Third Party</option>
+                                <option value="Third Party">Third Party</option>
                             </select>
                         </div>
-                        <div class="form-group hidden" id="jewelryOwnerGroup">
-                            <label>Jewelry Owner Name (if different from customer)</label>
-                            <input type="text" id="jewelryOwner" placeholder="Name of person who provided the jewelry">
-                        </div>
-                        <div class="form-group hidden" id="relationshipGroup">
-                            <label>Relationship to Jewelry Owner</label>
-                            <select id="ownerRelationship">
-                                <option value="">Select Relationship</option>
-                                <option value="Spouse">Spouse</option>
-                                <option value="Parent">Parent</option>
-                                <option value="Child">Child</option>
-                                <option value="Sibling">Sibling</option>
-                                <option value="Relative">Other Relative</option>
-                                <option value="Friend">Friend</option>
-                                <option value="Business Partner">Business Partner</option>
-                                <option value="Employer">Employer</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="jewelrySourceBusinessGroup">
-                            <label>Business/Employer Name (Source of Jewelry)</label>
-                            <input type="text" id="jewelrySourceBusiness" placeholder="e.g., EMILY DRYGOODS STORE">
-                            <small style="color: #666; font-size: 0.8rem; margin-top: 4px; display: block;">Enter the business name where the jewelry owner's funds came from</small>
+                        <div id="jewelryOwnerGroup" class="hidden">
+                            <div class="form-group">
+                                <label>Jewelry Owner</label>
+                                <input type="text" id="jewelryOwner" placeholder="Owner name">
+                            </div>
+                            <div class="form-group">
+                                <label>Relationship</label>
+                                <select id="ownerRelationship">
+                                    <option value="">Select</option>
+                                    <option value="Spouse">Spouse</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Child">Child</option>
+                                    <option value="Sibling">Sibling</option>
+                                    <option value="Employer">Employer</option>
+                                    <option value="Business Partner">Business Partner</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Business Source</label>
+                                <input type="text" id="jewelrySourceBusiness" placeholder="e.g., EMILY DRYGOODS STORE">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Purpose of Transaction -->
                     <div class="form-section">
-                        <div class="section-title">🎯 Transaction Purpose</div>
+                        <div class="section-title">Purpose</div>
                         <div class="form-group">
-                            <label class="required">Purpose of Transaction</label>
+                            <label>Transaction Purpose *</label>
                             <select id="transactionPurpose" required>
-                                <option value="">Select Purpose</option>
-                                <optgroup label="Business Purposes">
-                                    <option value="BUSINESS OPERATION TRANSACTIONS">BUSINESS OPERATION TRANSACTIONS</option>
-                                    <option value="CAPITAL FOR PROPOSED BUSINESS">CAPITAL FOR PROPOSED BUSINESS</option>
-                                    <option value="FINANCIAL INVESTMENT">FINANCIAL INVESTMENT</option>
-                                </optgroup>
-                                <optgroup label="Personal Expenses">
-                                    <option value="SALARY/PAYROLL">SALARY/PAYROLL - Employee salaries</option>
-                                    <option value="BILLS PAYMENT">BILLS PAYMENT - Utilities, rent, etc.</option>
-                                    <option value="SCHOOL/TUITION FEE">SCHOOL/TUITION FEE</option>
-                                    <option value="HOSPITAL & MEDICAL EXPENSE">HOSPITAL & MEDICAL EXPENSE</option>
-                                    <option value="TRAVEL EXPENSE">TRAVEL EXPENSE</option>
-                                    <option value="DOWRY/WEDDING EXPENSE">DOWRY/WEDDING EXPENSE</option>
-                                </optgroup>
-                                <optgroup label="Property & Construction">
-                                    <option value="CONSTRUCTION & RENOVATION">CONSTRUCTION & RENOVATION</option>
-                                    <option value="PAYMENT FOR PURCHASED PROPERTY">PAYMENT FOR PURCHASED PROPERTY</option>
-                                </optgroup>
-                                <optgroup label="Pawn Related">
-                                    <option value="FUNDS FOR PAWN ITEM REDEMPTION">FUNDS FOR PAWN ITEM REDEMPTION (Lukat/Tubos)</option>
-                                    <option value="ADDITIONAL PAWN PRINCIPAL">ADDITIONAL PAWN PRINCIPAL (Padagdag)</option>
-                                    <option value="PAWNER'S NAME UPDATE">PAWNER'S NAME UPDATE (Changed Name)</option>
-                                </optgroup>
-                                <optgroup label="Other">
-                                    <option value="FINANCIAL SUPPORT">FINANCIAL SUPPORT - To family/dependents</option>
-                                    <option value="BANK TRANSACTION">BANK TRANSACTION - Deposits/withdrawals</option>
-                                    <option value="TAKE-OUT TRANSACTIONS">TAKE-OUT TRANSACTIONS - From other branch</option>
-                                    <option value="BILI-SANGLA TRANSACTIONS">BILI-SANGLA TRANSACTIONS - Rematado items</option>
-                                    <option value="REMATADO SALE (CASH)">REMATADO SALE (CASH) - Cash purchase</option>
-                                </optgroup>
+                                <option value="">Select</option>
+                                <option value="BUSINESS OPERATION TRANSACTIONS">BUSINESS OPERATION</option>
+                                <option value="CAPITAL FOR PROPOSED BUSINESS">BUSINESS CAPITAL</option>
+                                <option value="SALARY/PAYROLL">SALARY/PAYROLL</option>
+                                <option value="BILLS PAYMENT">BILLS PAYMENT</option>
+                                <option value="SCHOOL/TUITION FEE">SCHOOL/TUITION</option>
+                                <option value="HOSPITAL & MEDICAL EXPENSE">MEDICAL EXPENSE</option>
+                                <option value="CONSTRUCTION & RENOVATION">CONSTRUCTION</option>
+                                <option value="FUNDS FOR PAWN ITEM REDEMPTION">PAWN REDEMPTION</option>
+                                <option value="ADDITIONAL PAWN PRINCIPAL">ADDITIONAL PRINCIPAL</option>
+                                <option value="FINANCIAL SUPPORT">FINANCIAL SUPPORT</option>
+                                <option value="TRAVEL EXPENSE">TRAVEL</option>
+                                <option value="DOWRY/WEDDING EXPENSE">WEDDING</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Supporting Documents -->
                     <div class="form-section">
-                        <div class="section-title">📄 Supporting Documents</div>
-                        <div class="alert-box">
-                            <div class="alert-title">⚠️ Document Checklist</div>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docBusinessPermit" value="Business Permit">
-                                    <label for="docBusinessPermit">Business Permit/Mayor's Permit</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docAuthLetter" value="Authorization Letter">
-                                    <label for="docAuthLetter">Authorization Letter</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docSEC" value="SEC Registration">
-                                    <label for="docSEC">SEC Registration</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docDTI" value="DTI Registration">
-                                    <label for="docDTI">DTI Registration</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docID" value="Valid ID">
-                                    <label for="docID">Valid Government ID</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docPayslip" value="Payslip">
-                                    <label for="docPayslip">Payslip/COE</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docFinancial" value="Financial Statements">
-                                    <label for="docFinancial">Financial Statements</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docContract" value="Contract">
-                                    <label for="docContract">Contract/Agreement</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docProofOfFunds" value="Proof of Funds">
-                                    <label for="docProofOfFunds">Proof of Funds</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="docRelationship" value="Proof of Relationship">
-                                    <label for="docRelationship">Proof of Relationship</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Document Status</label>
-                                <select id="docStatus">
-                                    <option value="Complete">Complete - All required documents submitted</option>
-                                    <option value="Incomplete">Incomplete - Pending documents</option>
-                                    <option value="Verified">Verified - Authenticated and valid</option>
-                                    <option value="Under Review">Under Review - Verification in progress</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Business Registration Status</label>
-                                <select id="regStatus">
-                                    <option value="">Select Status</option>
-                                    <option value="Verified Active">Verified - Registered, Active, Legally Existing</option>
-                                    <option value="Not Found">Not Found in Registry</option>
-                                    <option value="Inactive">Inactive/Cancelled</option>
-                                    <option value="Pending">Verification Pending</option>
-                                    <option value="N/A">Not Applicable (Individual)</option>
-                                </select>
-                            </div>
+                        <div class="section-title">Documents</div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item"><input type="checkbox" id="doc1" value="Business Permit"><label for="doc1">Business Permit</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc2" value="Authorization Letter"><label for="doc2">Auth Letter</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc3" value="SEC Registration"><label for="doc3">SEC Reg</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc4" value="DTI Registration"><label for="doc4">DTI Reg</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc5" value="Valid ID"><label for="doc5">Valid ID</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc6" value="Payslip"><label for="doc6">Payslip</label></div>
                         </div>
                     </div>
 
-                    <!-- Compliance & Risk Assessment -->
                     <div class="form-section">
-                        <div class="section-title">✅ Compliance & Risk Check</div>
+                        <div class="section-title">Compliance</div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label>AML System Alerts</label>
+                                <label>AML Alerts</label>
                                 <select id="amlAlerts">
-                                    <option value="None">No Alerts/Clean Record</option>
-                                    <option value="Flagged1">Flagged 1x - Minor alert</option>
-                                    <option value="Flagged2">Flagged 2x - Repeated alerts</option>
-                                    <option value="Flagged3">Flagged 3x+ - High risk</option>
-                                    <option value="Syndicated">Syndicated Pawn Weekly Alert</option>
-                                    <option value="BigPawn">Big Pawns Monthly Alert</option>
+                                    <option value="None">None</option>
+                                    <option value="Flagged1">Flagged 1x</option>
+                                    <option value="Flagged2">Flagged 2x</option>
+                                    <option value="Flagged3">Flagged 3x+</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Watchlist Status</label>
+                                <label>Watchlist</label>
                                 <select id="watchlistStatus">
-                                    <option value="Clean">No Record in Watchlist</option>
-                                    <option value="Listed">Listed in Watchlist</option>
-                                    <option value="PEP">Politically Exposed Person (PEP)</option>
-                                    <option value="Sanctioned">Sanctioned Individual</option>
+                                    <option value="Clean">Clean</option>
+                                    <option value="Listed">Listed</option>
+                                    <option value="PEP">PEP</option>
                                 </select>
                             </div>
                         </div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label>Historical Review (1 Year)</label>
+                                <label>Historical</label>
                                 <select id="historicalReview">
-                                    <option value="Normal">Normal Pattern - Consistent with profile</option>
-                                    <option value="Unusual">Unusual Activity Detected</option>
-                                    <option value="Inconsistent">Inconsistent with Declared Profile</option>
-                                    <option value="HighVolume">High Volume/Frequency</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Unusual">Unusual</option>
+                                    <option value="Inconsistent">Inconsistent</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Transaction Volume Assessment</label>
+                                <label>Volume</label>
                                 <select id="volumeAssessment">
-                                    <option value="Proportionate">Proportionate to Profile</option>
-                                    <option value="High">Higher than Expected</option>
-                                    <option value="Low">Lower than Expected</option>
-                                    <option value="Inconsistent">Inconsistent with Capacity</option>
+                                    <option value="Proportionate">Proportionate</option>
+                                    <option value="High">High</option>
+                                    <option value="Inconsistent">Inconsistent</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Final Assessment -->
                     <div class="form-section">
-                        <div class="section-title">📝 Final Assessment</div>
+                        <div class="section-title">Final</div>
                         <div class="form-group">
-                            <label>Justification of Alerts</label>
-                            <textarea id="alertJustification" placeholder="Explain any triggered alerts and investigation findings..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Special Remarks/Notes</label>
-                            <textarea id="remarks" placeholder="Any additional observations, red flags, or mitigating factors..."></textarea>
+                            <label>Remarks</label>
+                            <textarea id="remarks" placeholder="Additional notes..."></textarea>
                         </div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label class="required">Final Disposition</label>
+                                <label>Disposition *</label>
                                 <select id="finalDisposition" required>
-                                    <option value="Clean">Clean - No suspicious indicators</option>
-                                    <option value="Monitor">Monitor - Enhanced monitoring recommended</option>
-                                    <option value="Suspicious">Suspicious - Requires further investigation</option>
-                                    <option value="Reject">Reject - High risk/Non-compliant</option>
+                                    <option value="Clean">Clean</option>
+                                    <option value="Monitor">Monitor</option>
+                                    <option value="Suspicious">Suspicious</option>
+                                    <option value="Reject">Reject</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Analyst Name</label>
-                                <input type="text" id="analystName" placeholder="Your name">
+                                <label>Analyst</label>
+                                <input type="text" id="analystName" placeholder="Name">
                             </div>
                         </div>
                     </div>
 
                     <div class="actions">
-                        <button type="button" class="btn btn-primary" onclick="generateAssessment()">
-                            <span>⚡</span> Generate Assessment
-                        </button>
-                        <button type="button" class="btn btn-success" onclick="copyAssessment()">
-                            <span>📋</span> Copy to Clipboard
-                        </button>
-                        <button type="button" class="btn btn-warning" onclick="printAssessment()">
-                            <span>🖨️</span> Print Report
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
-                            <span>💾</span> Save Draft
-                        </button>
-                        <button type="reset" class="btn btn-secondary">
-                            <span>🔄</span> Reset Form
-                        </button>
+                        <button type="button" class="btn btn-primary" onclick="generateAssessment()">⚡ Generate</button>
+                        <button type="button" class="btn btn-success" onclick="copyAssessment()">📋 Copy</button>
+                        <button type="button" class="btn btn-warning" onclick="printAssessment()">🖨️ Print</button>
+                        <button type="reset" class="btn btn-secondary">🔄 Reset</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- OUTPUT PANEL -->
         <div class="panel">
             <div class="panel-header">
-                <span>📄</span> Generated Assessment Report
+                📄 Generated Report
                 <span id="statusBadge" class="status-badge status-clean">DRAFT</span>
             </div>
             <div class="panel-body">
                 <div id="assessmentOutput" class="output-panel">
                     <div class="assessment-header">
                         <h2>TRANSACTION ASSESSMENT REPORT</h2>
-                        <div class="assessment-date">Fill out the form to generate assessment</div>
-                    </div>
-                    <div class="assessment-body">
-                        Complete the input form on the left and click "Generate Assessment" to create the report.
-
-                        The generated report will feature:
-                        • Natural narrative flow with proper pronouns (he/she/they)
-                        • Human-like sentence variations
-                        • Professional assessment structure
-                        • Automatic consistency checks
+                        <div>Fill form and click Generate</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="github-badge">
-        🚀 Optimized for GitHub Pages
-    </div>
-
     <script>
-        // Initialize date
-        document.getElementById('assessmentDate').valueAsDate = new Date();
-
-        // Pronoun helper object
-        const pronouns = {
-            male: { subject: 'he', object: 'him', possessive: 'his', reflexive: 'himself', title: 'Mr.' },
-            female: { subject: 'she', object: 'her', possessive: 'her', reflexive: 'herself', title: 'Ms.' },
-            neutral: { subject: 'they', object: 'them', possessive: 'their', reflexive: 'themselves', title: 'Mx.' }
-        };
-
-        // Show/hide fields based on employment status
-        document.getElementById('employmentStatus').addEventListener('change', function() {
-            const employed = document.getElementById('employedFields');
-            const business = document.getElementById('businessFields');
-            const ofw = document.getElementById('ofwFields');
-
-            employed.classList.add('hidden');
-            business.classList.add('hidden');
-            ofw.classList.add('hidden');
-
-            if (this.value === 'Employed') {
-                employed.classList.remove('hidden');
-                employed.classList.add('fade-in');
-            } else if (this.value === 'Self-Employed') {
-                business.classList.remove('hidden');
-                business.classList.add('fade-in');
-            } else if (this.value === 'Overseas Worker') {
-                ofw.classList.remove('hidden');
-                ofw.classList.add('fade-in');
-                employed.classList.remove('hidden');
-                employed.classList.add('fade-in');
-            }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('assessmentDate').valueAsDate = new Date();
+            setupListeners();
         });
 
-        // Show/hide jewelry owner fields
-        document.getElementById('sourceOfJewelry').addEventListener('change', function() {
-            const ownerGroup = document.getElementById('jewelryOwnerGroup');
-            const relGroup = document.getElementById('relationshipGroup');
-
-            if (this.value === 'Third Party' || this.value === 'Business' || this.value === 'Inheritance') {
-                ownerGroup.classList.remove('hidden');
-                ownerGroup.classList.add('fade-in');
-                if (this.value === 'Third Party') {
-                    relGroup.classList.remove('hidden');
-                    relGroup.classList.add('fade-in');
-                } else {
-                    relGroup.classList.add('hidden');
+        function setupListeners() {
+            document.getElementById('employmentStatus').addEventListener('change', function() {
+                document.getElementById('employedFields').classList.add('hidden');
+                document.getElementById('businessFields').classList.add('hidden');
+                if (this.value === 'Employed' || this.value === 'Overseas Worker') {
+                    document.getElementById('employedFields').classList.remove('hidden');
+                } else if (this.value === 'Self-Employed') {
+                    document.getElementById('businessFields').classList.remove('hidden');
                 }
-            } else {
-                ownerGroup.classList.add('hidden');
-                relGroup.classList.add('hidden');
-            }
-        });
+            });
 
-        // Generate assessment with natural narrative
+            document.getElementById('sourceOfJewelry').addEventListener('change', function() {
+                const group = document.getElementById('jewelryOwnerGroup');
+                if (this.value === 'Third Party' || this.value === 'Business' || this.value === 'Inheritance') {
+                    group.classList.remove('hidden');
+                } else {
+                    group.classList.add('hidden');
+                }
+            });
+        }
+
         function generateAssessment() {
             const form = document.getElementById('assessmentForm');
             if (!form.checkValidity()) {
@@ -962,27 +325,17 @@
                 return;
             }
 
-            const data = collectFormData();
-            const p = pronouns[data.gender];
+            const data = collectData();
+            const p = getPronouns(data.gender);
+            const narrative = buildNarrative(data, p);
 
-            // Generate natural narrative
-            let narrative = generateNaturalNarrative(data, p);
-
-            // Update output
             document.getElementById('assessmentOutput').innerHTML = narrative;
-
-            // Update status badge
-            updateStatusBadge(data.finalDisposition);
-
-            // Save to localStorage
-            saveToLocalStorage(data);
+            updateBadge(data.finalDisposition);
         }
 
-        function collectFormData() {
+        function collectData() {
             const docs = [];
-            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => {
-                docs.push(cb.value);
-            });
+            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => docs.push(cb.value));
 
             return {
                 customerName: document.getElementById('customerName').value.trim().toUpperCase(),
@@ -992,12 +345,8 @@
                 employmentStatus: document.getElementById('employmentStatus').value,
                 employerName: document.getElementById('employerName').value.trim(),
                 position: document.getElementById('position').value.trim(),
-                industry: document.getElementById('industry').value.trim(),
                 tradeName: document.getElementById('tradeName').value.trim(),
-                businessType: document.getElementById('businessType').value,
                 businessNature: document.getElementById('businessNature').value.trim(),
-                ofwCountry: document.getElementById('ofwCountry').value.trim(),
-                ofwPosition: document.getElementById('ofwPosition').value.trim(),
                 sourceOfFund: document.getElementById('sourceOfFund').value,
                 sourceOfJewelry: document.getElementById('sourceOfJewelry').value,
                 jewelryOwner: document.getElementById('jewelryOwner').value.trim(),
@@ -1005,356 +354,135 @@
                 jewelrySourceBusiness: document.getElementById('jewelrySourceBusiness').value.trim(),
                 purpose: document.getElementById('transactionPurpose').value,
                 documents: docs,
-                docStatus: document.getElementById('docStatus').value,
-                regStatus: document.getElementById('regStatus').value,
                 amlAlerts: document.getElementById('amlAlerts').value,
                 watchlist: document.getElementById('watchlistStatus').value,
                 historical: document.getElementById('historicalReview').value,
                 volume: document.getElementById('volumeAssessment').value,
-                justification: document.getElementById('alertJustification').value.trim(),
                 remarks: document.getElementById('remarks').value.trim(),
                 disposition: document.getElementById('finalDisposition').value,
                 analyst: document.getElementById('analystName').value.trim()
             };
         }
 
-        function generateNaturalNarrative(data, p) {
-            let html = '<div class="assessment-header">';
-            html += '<h2>TRANSACTION ASSESSMENT REPORT</h2>';
-            html += '<div class="assessment-date">' + formatDate(data.date) + '</div>';
-            html += '</div>';
+        function getPronouns(gender) {
+            const map = {
+                male: { s: 'he', o: 'him', p: 'his', r: 'himself', t: 'Mr.' },
+                female: { s: 'she', o: 'her', p: 'her', r: 'herself', t: 'Ms.' },
+                neutral: { s: 'they', o: 'them', p: 'their', r: 'themselves', t: 'Mx.' }
+            };
+            return map[gender] || map.male;
+        }
 
+        function buildNarrative(data, p) {
+            let html = '<div class="assessment-header"><h2>TRANSACTION ASSESSMENT REPORT</h2><div>' + formatDate(data.date) + '</div></div>';
             html += '<div class="assessment-body">';
 
-            // Paragraph 1: Customer Identity and Role
-            html += '<p>';
-            html += data.customerName + ' IS ';
+            // Customer info
+            html += '<p>' + data.customerName + ' IS ';
             if (data.customerType === 'Authorized') {
-                html += 'AN AUTHORIZED REPRESENTATIVE ACTING ON BEHALF OF THE ULTIMATE BENEFICIAL OWNER. ' + p.subject.toUpperCase() + ' HAS PRESENTED AN AUTHORIZATION LETTER AND VALID IDENTIFICATION DOCUMENTS. ';
+                html += 'AN AUTHORIZED REPRESENTATIVE. ' + p.s.toUpperCase() + ' HAS PRESENTED AN AUTHORIZATION LETTER. ';
             } else {
-                html += 'THE ULTIMATE BENEFICIAL OWNER (UBO) OF THE TRANSACTION. ';
+                html += 'THE ULTIMATE BENEFICIAL OWNER (UBO). ';
             }
 
-            // Employment/Business Context with natural flow
+            // Employment
             if (data.employmentStatus === 'Employed' && data.employerName) {
-                const introPhrases = ['CURRENTLY EMPLOYED AT', 'WORKS AS', 'IS GAINFULLY EMPLOYED WITH'];
-                const phrase = introPhrases[Math.floor(Math.random() * introPhrases.length)];
-                html += p.subject.toUpperCase() + ' ' + phrase + ' ' + data.employerName.toUpperCase();
-                if (data.position) {
-                    html += ', SERVING AS ' + data.position.toUpperCase();
-                }
-                if (data.industry) {
-                    html += ' IN THE ' + data.industry.toUpperCase() + ' SECTOR';
-                }
+                html += p.s.toUpperCase() + ' IS EMPLOYED AT ' + data.employerName.toUpperCase();
+                if (data.position) html += ' AS ' + data.position.toUpperCase();
                 html += '. ';
             } else if (data.employmentStatus === 'Self-Employed' && data.tradeName) {
-                const bizPhrases = ['OWNS AND OPERATES', 'IS THE PROPRIETOR OF', 'MANAGES'];
-                const phrase = bizPhrases[Math.floor(Math.random() * bizPhrases.length)];
-                html += p.subject.toUpperCase() + ' ' + phrase + ' ' + data.tradeName.toUpperCase();
-                if (data.businessType) {
-                    html += ', OPERATING AS A ' + data.businessType.toUpperCase();
-                }
-                if (data.businessNature) {
-                    html += ' ENGAGED IN ' + data.businessNature.toUpperCase();
-                }
+                html += p.s.toUpperCase() + ' OWNS ' + data.tradeName.toUpperCase();
+                if (data.businessNature) html += ' ENGAGED IN ' + data.businessNature.toUpperCase();
                 html += '. ';
-            } else if (data.employmentStatus === 'Overseas Worker') {
-                html += p.subject.toUpperCase() + ' IS AN OVERSEAS FILIPINO WORKER (OFW) ';
-                if (data.ofwCountry) {
-                    html += 'CURRENTLY EMPLOYED IN ' + data.ofwCountry.toUpperCase();
-                }
-                if (data.ofwPosition) {
-                    html += ' AS A ' + data.ofwPosition.toUpperCase();
-                }
-                html += '. ';
-            } else if (data.employmentStatus === 'Retired') {
-                html += p.subject.toUpperCase() + ' IS CURRENTLY RETIRED AND RECEIVING PENSION BENEFITS. ';
-            } else if (data.employmentStatus === 'Student') {
-                html += p.subject.toUpperCase() + ' IS CURRENTLY ENROLLED AS A STUDENT. ';
             } else {
-                html += p.subject.toUpperCase() + ' IS CURRENTLY ' + data.employmentStatus.toUpperCase() + '. ';
+                html += p.s.toUpperCase() + ' IS ' + data.employmentStatus.toUpperCase() + '. ';
             }
 
-            // Source of Funds with natural transitions
-            const fundTransitions = ['THE FUNDS INVOLVED IN THIS TRANSACTION ARE SOURCED FROM', 'THE ORIGIN OF FUNDS IS', 'FINANCIAL RESOURCES ARE DERIVED FROM'];
-            const transition = fundTransitions[Math.floor(Math.random() * fundTransitions.length)];
-            html += transition + ' ' + data.sourceOfFund;
-
+            // Source of funds
+            html += 'THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
             if (data.sourceOfFund === 'BUSINESS' && data.tradeName) {
-                html += ' GENERATED BY ' + data.tradeName.toUpperCase();
+                html += ' FROM ' + data.tradeName.toUpperCase();
             } else if (data.sourceOfFund === 'SALARY' && data.employerName) {
-                html += ' FROM ' + p.possessive.toUpperCase() + ' EMPLOYMENT WITH ' + data.employerName.toUpperCase();
-            } else if (data.sourceOfFund === 'ALLOWANCE/REMITTANCE') {
-                html += ' SENT BY FAMILY MEMBERS OR RELATIVES';
-            } else if (data.sourceOfFund === 'PENSION') {
-                html += ' FROM GOVERNMENT OR PRIVATE PENSION PROVIDERS';
-            } else if (data.sourceOfFund === 'SAVINGS & INVESTMENT') {
-                html += ', REPRESENTING RETURNS ON INVESTMENTS AND ACCUMULATED SAVINGS';
-            } else if (data.sourceOfFund === 'INHERITANCE') {
-                html += ' RECEIVED AS INHERITANCE FROM A DECEASED FAMILY MEMBER';
+                html += ' FROM ' + data.employerName.toUpperCase();
             }
             html += '. ';
 
-            // Source of Jewelry with ownership details
+            // Jewelry source
             if (data.jewelryOwner && data.jewelryOwner.toUpperCase() !== data.customerName) {
-                html += 'THE JEWELRY ITEMS SUBJECT OF THIS TRANSACTION ARE OWNED BY ' + data.jewelryOwner.toUpperCase();
-                if (data.ownerRelationship) {
-                    html += ', WHO IS ' + p.possessive.toUpperCase() + ' ' + data.ownerRelationship.toUpperCase();
-                }
+                html += 'THE JEWELRY IS OWNED BY ' + data.jewelryOwner.toUpperCase();
+                if (data.ownerRelationship) html += ', ' + p.p.toUpperCase() + ' ' + data.ownerRelationship.toUpperCase();
                 html += '. ';
-
-                // Add business source if provided
                 if (data.jewelrySourceBusiness) {
-                    html += 'THE FUNDS USED TO ACQUIRE THE SAID JEWELRY WERE DERIVED FROM ' + data.jewelrySourceBusiness.toUpperCase();
-                    if (data.sourceOfJewelry === 'Business' || data.sourceOfJewelry === 'Savings & Investment') {
-                        html += ' THROUGH BUSINESS SAVINGS AND OPERATIONS';
-                    } else if (data.sourceOfJewelry === 'Salary') {
-                        html += ' THROUGH SALARY EARNINGS';
-                    } else if (data.sourceOfJewelry === 'Inheritance') {
-                        html += ' THROUGH INHERITED ASSETS';
-                    }
-                    html += '. ';
-                } else {
-                    html += 'THE SAID ITEMS WERE ACQUIRED THROUGH ' + data.sourceOfJewelry.toUpperCase() + '. ';
+                    html += 'THE FUNDS CAME FROM ' + data.jewelrySourceBusiness.toUpperCase() + '. ';
                 }
             } else {
-                const jewelryPhrases = ['THE JEWELRY ITEMS WERE ACQUIRED THROUGH', 'THE PAWNED ARTICLES ORIGINATED FROM', 'THE CUSTOMER OBTAINED THE JEWELRY THROUGH'];
-                const jPhrase = jewelryPhrases[Math.floor(Math.random() * jewelryPhrases.length)];
-                html += jPhrase + ' ' + data.sourceOfJewelry.toUpperCase();
-
-                if (data.jewelrySourceBusiness) {
-                    html += ' FROM ' + data.jewelrySourceBusiness.toUpperCase();
-                }
-                html += '. ';
+                html += 'THE JEWELRY IS FROM ' + data.sourceOfJewelry.toUpperCase() + '. ';
             }
 
-            // Purpose with context
-            const purposeIntros = ['THE STATED PURPOSE OF THIS TRANSACTION IS TO', 'THIS TRANSACTION IS INTENDED FOR', 'THE CUSTOMER SEEKS TO UTILIZE THE FUNDS FOR'];
-            const pIntro = purposeIntros[Math.floor(Math.random() * purposeIntros.length)];
-            html += pIntro + ' ' + data.purpose + '. ';
+            // Purpose
+            html += 'THE PURPOSE IS ' + data.purpose + '. ';
 
-            // Documents section
+            // Documents
             if (data.documents.length > 0) {
-                html += 'TO SUBSTANTIATE ' + p.possessive.toUpperCase() + ' CLAIMS AND PROFILE, ';
-                html += data.customerName + ' SUBMITTED THE FOLLOWING: ';
-                html += data.documents.map(d => d.toUpperCase()).join(', ') + '. ';
-
-                if (data.docStatus === 'Verified') {
-                    html += 'UPON REVIEW, THESE DOCUMENTS WERE FOUND TO BE AUTHENTIC AND VALID. ';
-                } else if (data.docStatus === 'Under Review') {
-                    html += 'VERIFICATION OF THESE DOCUMENTS IS CURRENTLY ONGOING. ';
-                }
+                html += 'DOCUMENTS SUBMITTED: ' + data.documents.join(', ').toUpperCase() + '. ';
             }
 
             html += '</p>';
 
-            // Verification Section
-            html += '<div class="verification-section">';
-            html += '<div class="verification-title">VERIFICATION AND COMPLIANCE FINDINGS</div>';
+            // Compliance
+            html += '<div style="margin-top:20px;padding-top:15px;border-top:2px dashed #ccc;">';
+            html += '<div style="font-weight:bold;color:#1e3a5f;margin-bottom:10px;">COMPLIANCE FINDINGS:</div>';
 
-            // Business registration verification
-            if (data.regStatus && data.regStatus !== 'N/A' && data.regStatus !== '') {
-                html += '<p>';
-                if (data.businessType === 'Corporation' || data.businessType === 'Partnership') {
-                    html += 'VERIFICATION WITH THE SECURITIES AND EXCHANGE COMMISSION (SEC) CONFIRMED THAT ';
-                } else {
-                    html += 'VERIFICATION WITH THE DEPARTMENT OF TRADE AND INDUSTRY (DTI) REVEALED THAT ';
-                }
-
-                if (data.regStatus === 'Verified Active') {
-                    html += 'THE BUSINESS IS DULY REGISTERED, ACTIVE, AND LEGALLY EXISTING. ';
-                } else if (data.regStatus === 'Not Found') {
-                    html += 'NO RECORD OF REGISTRATION WAS FOUND. ';
-                } else if (data.regStatus === 'Inactive') {
-                    html += 'THE REGISTRATION STATUS IS INACTIVE OR CANCELLED. ';
-                } else if (data.regStatus === 'Pending') {
-                    html += 'VERIFICATION IS STILL PENDING COMPLETION. ';
-                }
-                html += '</p>';
-            }
-
-            // AML and watchlist checks
             if (data.amlAlerts !== 'None' || data.watchlist !== 'Clean') {
-                html += '<p>';
-                html += 'A COMPREHENSIVE REVIEW OF THE ANTI-MONEY LAUNDERING (AML) MONITORING SYSTEM AND WATCHLIST DATABASES WAS CONDUCTED. ';
-
-                if (data.amlAlerts !== 'None') {
-                    if (data.amlAlerts.includes('Flagged')) {
-                        const times = data.amlAlerts.replace('Flagged', '').replace('x', '');
-                        html += 'RESULTS INDICATE THAT ' + data.customerName + ' HAS BEEN FLAGGED ' + times + ' TIME(S) IN THE SYSTEM. ';
-                    } else {
-                        html += 'THE SYSTEM GENERATED A ' + data.amlAlerts.toUpperCase() + ' ALERT. ';
-                    }
-                }
-
-                if (data.watchlist !== 'Clean') {
-                    html += 'FURTHERMORE, THE CUSTOMER IS IDENTIFIED AS A ' + data.watchlist.toUpperCase() + ' IN THE WATCHLIST. ';
-                }
-
-                if (data.justification) {
-                    html += 'INVESTIGATION REVEALS: ' + data.justification + '. ';
-                }
+                html += '<p>AML REVIEW: ';
+                if (data.amlAlerts !== 'None') html += 'FLAGGED ' + data.amlAlerts + '. ';
+                if (data.watchlist !== 'Clean') html += 'WATCHLIST: ' + data.watchlist + '. ';
                 html += '</p>';
             }
 
-            // Historical and volume analysis
-            html += '<p>';
-            html += 'AN ANALYSIS OF THE ONE (1) YEAR HISTORICAL TRANSACTION RECORDS DEMONSTRATES ' + data.historical.toUpperCase() + '. ';
-            html += 'THE VOLUME AND VALUE OF TRANSACTIONS ARE ' + data.volume.toUpperCase() + ' RELATIVE TO THE CUSTOMER'S DECLARED FINANCIAL CAPACITY AND PROFILE. ';
-
-            // Consistency conclusion
+            html += '<p>HISTORICAL REVIEW: ' + data.historical + '. VOLUME: ' + data.volume + '. ';
             if (data.volume === 'Proportionate' && data.historical === 'Normal' && data.amlAlerts === 'None' && data.watchlist === 'Clean') {
-                html += 'OVERALL, THE CUSTOMER'S TRANSACTION PATTERNS, SOURCE OF FUNDS, AND STATED PURPOSE DEMONSTRATE CONSISTENCY WITH ' + p.possessive.toUpperCase() + ' PROFILE. ';
-                html += 'NO SIGNIFICANT RED FLAGS OR SUSPICIOUS INDICATORS WERE IDENTIFIED DURING THE ASSESSMENT. ';
-            } else if (data.volume === 'Inconsistent' || data.historical === 'Inconsistent' || data.amlAlerts !== 'None') {
-                html += 'HOWEVER, CERTAIN ASPECTS OF THE TRANSACTION WARRANT ENHANCED SCRUTINY. ';
-                if (data.amlAlerts !== 'None') {
-                    html += 'THE PREVIOUS SYSTEM ALERTS SUGGEST A NEED FOR CONTINUED MONITORING. ';
-                }
+                html += 'TRANSACTION IS CONSISTENT WITH PROFILE. NO RED FLAGS. ';
             }
-            html += '</p>';
+            html += '</p></div>';
 
-            html += '</div>';
-
-            // Final Conclusion
-            html += '<div class="conclusion">';
-            html += '<strong>FINAL ASSESSMENT AND DISPOSITION:</strong><br><br>';
-
+            // Conclusion
+            html += '<div style="margin-top:20px;padding:15px;background:white;border-left:4px solid #d69e2e;font-style:italic;">';
+            html += '<strong>DISPOSITION:</strong> ';
             switch(data.disposition) {
-                case 'Clean':
-                    html += 'Based on the comprehensive evaluation of the customer's profile, supporting documentation, transaction history, and risk indicators, <strong>THE TRANSACTION IS APPROVED FOR PROCESSING</strong>. ';
-                    html += 'The assessment reveals no material inconsistencies or suspicious elements. ' + data.customerName + ' has demonstrated compliance with regulatory requirements, and the transaction aligns with ' + p.possessive + ' stated purpose and financial capacity. ';
-                    html += '<br><br><strong>Recommendation:</strong> Proceed with transaction. Standard monitoring protocols apply.';
-                    break;
-                case 'Monitor':
-                    html += 'While the customer has provided complete documentation and no immediate suspicious activity is detected, <strong>ENHANCED MONITORING IS RECOMMENDED</strong>. ';
-                    html += 'Certain factors, such as transaction patterns or alert history, warrant closer observation of future activities. ';
-                    html += '<br><br><strong>Recommendation:</strong> Approve with caution. Flag for periodic review and monitor subsequent transactions for consistency.';
-                    break;
-                case 'Suspicious':
-                    html += 'The assessment reveals <strong>POTENTIALLY SUSPICIOUS INDICATORS</strong> that require further investigation before proceeding. ';
-                    html += 'Discrepancies in documentation, unusual transaction patterns, or watchlist matches necessitate additional due diligence. ';
-                    html += '<br><br><strong>Recommendation:</strong> HOLD transaction pending further investigation. Escalate to compliance officer for review.';
-                    break;
-                case 'Reject':
-                    html += 'The assessment concludes that <strong>THE TRANSACTION SHOULD NOT BE PROCESSED</strong> due to significant risk factors. ';
-                    html += 'High-risk indicators, incomplete verification, or regulatory concerns preclude approval. ';
-                    html += '<br><br><strong>Recommendation:</strong> DECLINE transaction. Document reasons and file suspicious transaction report if warranted.';
-                    break;
+                case 'Clean': html += 'APPROVED. No suspicious indicators.'; break;
+                case 'Monitor': html += 'APPROVED WITH MONITORING. Enhanced observation required.'; break;
+                case 'Suspicious': html += 'HOLD. Further investigation needed.'; break;
+                case 'Reject': html += 'DECLINED. High risk factors identified.'; break;
             }
-
-            if (data.remarks) {
-                html += '<br><br><strong>Additional Notes:</strong> ' + data.remarks;
-            }
-
-            if (data.analyst) {
-                html += '<br><br><div style="margin-top: 20px; text-align: right;">Assessed by: <strong>' + data.analyst + '</strong></div>';
-            }
-
-            html += '</div>';
-            html += '</div>';
+            if (data.remarks) html += '<br><br>Notes: ' + data.remarks;
+            if (data.analyst) html += '<br><br>Assessed by: <strong>' + data.analyst + '</strong>';
+            html += '</div></div>';
 
             return html;
         }
 
-        function updateStatusBadge(disposition) {
+        function formatDate(dateStr) {
+            if (!dateStr) return new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+            return new Date(dateStr).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+        }
+
+        function updateBadge(disposition) {
             const badge = document.getElementById('statusBadge');
             badge.textContent = disposition.toUpperCase();
             badge.className = 'status-badge status-' + disposition.toLowerCase();
         }
 
-        function formatDate(dateStr) {
-            if (!dateStr) return new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
-        }
-
         function copyAssessment() {
-            const output = document.getElementById('assessmentOutput');
-            const text = output.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Assessment report copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-                alert('Please select and copy the text manually');
+            const text = document.getElementById('assessmentOutput').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Copied to clipboard!');
             });
         }
 
         function printAssessment() {
             window.print();
         }
-
-        function saveDraft() {
-            const data = collectFormData();
-            saveToLocalStorage(data);
-            alert('Draft saved successfully! Your data is stored locally in this browser.');
-        }
-
-        function saveToLocalStorage(data) {
-            try {
-                localStorage.setItem('pawnAssessmentDraft', JSON.stringify(data));
-                localStorage.setItem('pawnAssessmentTimestamp', new Date().toISOString());
-            } catch (e) {
-                console.warn('Could not save to localStorage:', e);
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('pawnAssessmentDraft');
-                const timestamp = localStorage.getItem('pawnAssessmentTimestamp');
-
-                if (saved && timestamp) {
-                    const data = JSON.parse(saved);
-                    const date = new Date(timestamp);
-                    const age = (new Date() - date) / (1000 * 60 * 60); // hours
-
-                    if (age < 168) { // Less than 1 week old
-                        if (confirm('Load previously saved draft from ' + date.toLocaleDateString() + '?')) {
-                            populateForm(data);
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('Could not load from localStorage:', e);
-            }
-        }
-
-        function populateForm(data) {
-            // Populate all fields from saved data
-            Object.keys(data).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) {
-                    if (element.type === 'checkbox') {
-                        element.checked = data[key];
-                    } else {
-                        element.value = data[key] || '';
-                    }
-                }
-            });
-
-            // Handle checkboxes separately
-            if (data.documents) {
-                document.querySelectorAll('.checkbox-group input').forEach(cb => {
-                    cb.checked = data.documents.includes(cb.value);
-                });
-            }
-
-            // Trigger change events to show/hide fields
-            document.getElementById('employmentStatus').dispatchEvent(new Event('change'));
-            document.getElementById('sourceOfJewelry').dispatchEvent(new Event('change'));
-        }
-
-        // Load draft on page load
-        window.addEventListener('load', loadFromLocalStorage);
-
-        // Auto-save every 30 seconds
-        setInterval(() => {
-            const data = collectFormData();
-            if (data.customerName) { // Only save if there's data
-                saveToLocalStorage(data);
-            }
-        }, 30000);
     </script>
 </body>
 </html>
