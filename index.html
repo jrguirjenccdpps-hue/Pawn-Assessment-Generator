@@ -40,6 +40,7 @@
         @media print { body { background: white; } .panel:first-child { display: none; } .actions { display: none; } }
     </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
     <div class="container">
@@ -48,12 +49,68 @@
             <div class="panel-body">
                 <form id="assessmentForm">
                     <div class="form-section">
-                        <div class="section-title">Customer Profile</div>
+                        <div class="section-title">Transaction Details</div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label>Customer Name *</label>
-                                <input type="text" id="customerName" placeholder="Lastname, Firstname M." required>
+                                <label>Transaction Type *</label>
+                                <select id="transactionType" required>
+                                    <option value="">Select</option>
+                                    <option value="Individual">Individual</option>
+                                    <option value="Corporate">Corporate</option>
+                                </select>
                             </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="assessmentDate">
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Location (City/Province) *</label>
+                                <input type="text" id="location" placeholder="e.g., DANAO CITY, CEBU" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Principal Amount (PHP) *</label>
+                                <input type="number" id="principalAmount" placeholder="e.g., 50000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="corporateFields" class="form-section hidden">
+                        <div class="section-title">Corporate Details</div>
+                        <div class="form-group">
+                            <label>Company Name *</label>
+                            <input type="text" id="companyName" placeholder="Company name">
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Representative Type *</label>
+                                <select id="representativeType">
+                                    <option value="">Select</option>
+                                    <option value="UBO">UBO</option>
+                                    <option value="Authorized">Authorized</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nature of Business</label>
+                                <input type="text" id="companyNature" placeholder="e.g., Retail, Services">
+                            </div>
+                        </div>
+                        <div id="beneficialOwnerGroup" class="hidden">
+                            <div class="form-group">
+                                <label>Beneficial Owner Name *</label>
+                                <input type="text" id="beneficialOwner" placeholder="Name of owner who sent the representative">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">Customer Profile</div>
+                        <div class="form-group">
+                            <label id="customerLabel">Customer Name *</label>
+                            <input type="text" id="customerName" placeholder="Lastname, Firstname M." required>
+                        </div>
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label>Gender *</label>
                                 <select id="gender" required>
@@ -63,34 +120,18 @@
                                     <option value="neutral">Neutral</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid-2">
                             <div class="form-group">
-                                <label>Date</label>
-                                <input type="date" id="assessmentDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Type *</label>
-                                <select id="customerType" required>
-                                    <option value="UBO">UBO</option>
-                                    <option value="Authorized">Authorized</option>
+                                <label>Employment Status *</label>
+                                <select id="employmentStatus" required>
+                                    <option value="">Select</option>
+                                    <option value="Employed">Employed</option>
+                                    <option value="Self-Employed">Self-Employed</option>
+                                    <option value="Retired">Retired</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Overseas Worker">OFW</option>
+                                    <option value="Unemployed">Unemployed</option>
                                 </select>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <div class="section-title">Employment</div>
-                        <div class="form-group">
-                            <label>Status *</label>
-                            <select id="employmentStatus" required>
-                                <option value="">Select</option>
-                                <option value="Employed">Employed</option>
-                                <option value="Self-Employed">Self-Employed</option>
-                                <option value="Retired">Retired</option>
-                                <option value="Student">Student</option>
-                                <option value="Overseas Worker">OFW</option>
-                            </select>
                         </div>
                         <div id="employedFields" class="hidden">
                             <div class="form-group">
@@ -126,6 +167,7 @@
                                 <option value="PENSION">PENSION</option>
                                 <option value="SAVINGS & INVESTMENT">SAVINGS & INVESTMENT</option>
                                 <option value="INHERITANCE">INHERITANCE</option>
+                                <option value="CHURCH DONATIONS">CHURCH DONATIONS</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -140,6 +182,7 @@
                                 <option value="Savings & Investment">Savings & Investment</option>
                                 <option value="Inheritance">Inheritance</option>
                                 <option value="Third Party">Third Party</option>
+                                <option value="Rematado Display">Rematado Display</option>
                             </select>
                         </div>
                         <div id="jewelryOwnerGroup" class="hidden">
@@ -157,6 +200,7 @@
                                     <option value="Sibling">Sibling</option>
                                     <option value="Employer">Employer</option>
                                     <option value="Business Partner">Business Partner</option>
+                                    <option value="Partner">Partner</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -184,6 +228,9 @@
                                 <option value="FINANCIAL SUPPORT">FINANCIAL SUPPORT</option>
                                 <option value="TRAVEL EXPENSE">TRAVEL</option>
                                 <option value="DOWRY/WEDDING EXPENSE">WEDDING</option>
+                                <option value="DONATION, CHARITY, AND OUTREACH ACTIVITIES">DONATION/CHARITY</option>
+                                <option value="INVESTMENT AND ITEM FOR PERSONAL USE">INVESTMENT/PERSONAL USE</option>
+                                <option value="ADDITIONAL BUDGET FOR FAMILY DAILY EXPENSES">FAMILY EXPENSES</option>
                             </select>
                         </div>
                     </div>
@@ -196,7 +243,8 @@
                             <div class="checkbox-item"><input type="checkbox" id="doc3" value="SEC Registration"><label for="doc3">SEC Reg</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc4" value="DTI Registration"><label for="doc4">DTI Reg</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc5" value="Valid ID"><label for="doc5">Valid ID</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="doc6" value="Payslip"><label for="doc6">Payslip</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc6" value="Company ID"><label for="doc6">Company ID</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc7" value="Payslip"><label for="doc7">Payslip</label></div>
                         </div>
                     </div>
 
@@ -242,11 +290,7 @@
                     </div>
 
                     <div class="form-section">
-                        <div class="section-title">Final</div>
-                        <div class="form-group">
-                            <label>Remarks</label>
-                            <textarea id="remarks" placeholder="Additional notes..."></textarea>
-                        </div>
+                        <div class="section-title">Final Disposition</div>
                         <div class="grid-2">
                             <div class="form-group">
                                 <label>Disposition *</label>
@@ -268,7 +312,7 @@
                         <button type="button" class="btn btn-primary" onclick="generateAssessment()">⚡ Generate</button>
                         <button type="button" class="btn btn-success" onclick="copyAssessment()">📋 Copy</button>
                         <button type="button" class="btn btn-warning" onclick="printAssessment()">🖨️ Print</button>
-                        <button type="reset" class="btn btn-secondary">🔄 Reset</button>
+                        <button type="reset" class="btn btn-secondary" onclick="resetForm()">🔄 Reset</button>
                     </div>
                 </form>
             </div>
@@ -298,6 +342,41 @@
         });
 
         function setupListeners() {
+            // Transaction Type toggle
+            document.getElementById('transactionType').addEventListener('change', function() {
+                const corporateFields = document.getElementById('corporateFields');
+                const repType = document.getElementById('representativeType');
+                const customerLabel = document.getElementById('customerLabel');
+
+                if (this.value === 'Corporate') {
+                    corporateFields.classList.remove('hidden');
+                    repType.required = true;
+                    customerLabel.textContent = 'Representative Name *';
+                } else {
+                    corporateFields.classList.add('hidden');
+                    repType.required = false;
+                    document.getElementById('beneficialOwnerGroup').classList.add('hidden');
+                    document.getElementById('beneficialOwner').required = false;
+                    customerLabel.textContent = 'Customer Name *';
+                }
+            });
+
+            // Representative Type toggle for Beneficial Owner
+            document.getElementById('representativeType').addEventListener('change', function() {
+                const boGroup = document.getElementById('beneficialOwnerGroup');
+                const boField = document.getElementById('beneficialOwner');
+
+                if (this.value === 'Authorized') {
+                    boGroup.classList.remove('hidden');
+                    boField.required = true;
+                } else {
+                    boGroup.classList.add('hidden');
+                    boField.required = false;
+                    boField.value = '';
+                }
+            });
+
+            // Employment Status toggle
             document.getElementById('employmentStatus').addEventListener('change', function() {
                 document.getElementById('employedFields').classList.add('hidden');
                 document.getElementById('businessFields').classList.add('hidden');
@@ -308,6 +387,7 @@
                 }
             });
 
+            // Source of Jewelry toggle
             document.getElementById('sourceOfJewelry').addEventListener('change', function() {
                 const group = document.getElementById('jewelryOwnerGroup');
                 if (this.value === 'Third Party' || this.value === 'Business' || this.value === 'Inheritance') {
@@ -316,6 +396,16 @@
                     group.classList.add('hidden');
                 }
             });
+        }
+
+        function resetForm() {
+            document.getElementById('corporateFields').classList.add('hidden');
+            document.getElementById('beneficialOwnerGroup').classList.add('hidden');
+            document.getElementById('employedFields').classList.add('hidden');
+            document.getElementById('businessFields').classList.add('hidden');
+            document.getElementById('jewelryOwnerGroup').classList.add('hidden');
+            document.getElementById('customerLabel').textContent = 'Customer Name *';
+            document.getElementById('assessmentDate').valueAsDate = new Date();
         }
 
         function generateAssessment() {
@@ -338,27 +428,32 @@
             document.querySelectorAll('.checkbox-group input:checked').forEach(cb => docs.push(cb.value));
 
             return {
+                transactionType: document.getElementById('transactionType').value,
+                companyName: document.getElementById('companyName').value.trim().toUpperCase(),
+                representativeType: document.getElementById('representativeType').value,
+                beneficialOwner: document.getElementById('beneficialOwner').value.trim().toUpperCase(),
+                companyNature: document.getElementById('companyNature').value.trim().toUpperCase(),
                 customerName: document.getElementById('customerName').value.trim().toUpperCase(),
                 gender: document.getElementById('gender').value,
                 date: document.getElementById('assessmentDate').value,
-                customerType: document.getElementById('customerType').value,
+                location: document.getElementById('location').value.trim().toUpperCase(),
+                principalAmount: document.getElementById('principalAmount').value,
                 employmentStatus: document.getElementById('employmentStatus').value,
-                employerName: document.getElementById('employerName').value.trim(),
-                position: document.getElementById('position').value.trim(),
-                tradeName: document.getElementById('tradeName').value.trim(),
-                businessNature: document.getElementById('businessNature').value.trim(),
+                employerName: document.getElementById('employerName').value.trim().toUpperCase(),
+                position: document.getElementById('position').value.trim().toUpperCase(),
+                tradeName: document.getElementById('tradeName').value.trim().toUpperCase(),
+                businessNature: document.getElementById('businessNature').value.trim().toUpperCase(),
                 sourceOfFund: document.getElementById('sourceOfFund').value,
                 sourceOfJewelry: document.getElementById('sourceOfJewelry').value,
-                jewelryOwner: document.getElementById('jewelryOwner').value.trim(),
+                jewelryOwner: document.getElementById('jewelryOwner').value.trim().toUpperCase(),
                 ownerRelationship: document.getElementById('ownerRelationship').value,
-                jewelrySourceBusiness: document.getElementById('jewelrySourceBusiness').value.trim(),
+                jewelrySourceBusiness: document.getElementById('jewelrySourceBusiness').value.trim().toUpperCase(),
                 purpose: document.getElementById('transactionPurpose').value,
                 documents: docs,
                 amlAlerts: document.getElementById('amlAlerts').value,
                 watchlist: document.getElementById('watchlistStatus').value,
                 historical: document.getElementById('historicalReview').value,
                 volume: document.getElementById('volumeAssessment').value,
-                remarks: document.getElementById('remarks').value.trim(),
                 disposition: document.getElementById('finalDisposition').value,
                 analyst: document.getElementById('analystName').value.trim()
             };
@@ -374,92 +469,110 @@
         }
 
         function buildNarrative(data, p) {
-            let html = '<div class="assessment-header"><h2>TRANSACTION ASSESSMENT REPORT</h2><div>' + formatDate(data.date) + '</div></div>';
-            html += '<div class="assessment-body">';
+            let paragraph = '';
 
-            // Customer info
-            html += '<p>' + data.customerName + ' IS ';
-            if (data.customerType === 'Authorized') {
-                html += 'AN AUTHORIZED REPRESENTATIVE. ' + p.s.toUpperCase() + ' HAS PRESENTED AN AUTHORIZATION LETTER. ';
+            // Opening - Customer/Representative info
+            if (data.transactionType === 'Corporate') {
+                paragraph += data.customerName + ' IS ';
+                if (data.representativeType === 'Authorized') {
+                    paragraph += 'AN AUTHORIZED REPRESENTATIVE OF ' + data.companyName;
+                    if (data.companyNature) paragraph += ' ENGAGED IN ' + data.companyNature;
+                    paragraph += '. ' + p.s.toUpperCase() + ' WAS AUTHORIZED BY ' + data.beneficialOwner + ' TO TRANSACT ON BEHALF OF THE COMPANY';
+                } else {
+                    paragraph += 'THE ULTIMATE BENEFICIAL OWNER (UBO) OF ' + data.companyName;
+                    if (data.companyNature) paragraph += ' ENGAGED IN ' + data.companyNature;
+                }
+                paragraph += '. ';
             } else {
-                html += 'THE ULTIMATE BENEFICIAL OWNER (UBO). ';
+                paragraph += data.customerName + ' IS ';
+                if (data.employmentStatus === 'Employed' && data.employerName) {
+                    paragraph += 'EMPLOYED AT ' + data.employerName;
+                    if (data.position) paragraph += ' AS ' + data.position;
+                    paragraph += '. ';
+                } else if (data.employmentStatus === 'Self-Employed' && data.tradeName) {
+                    paragraph += 'ENGAGED IN BUSINESS UNDER THE TRADE NAME ' + data.tradeName;
+                    if (data.businessNature) paragraph += ' ENGAGED IN ' + data.businessNature;
+                    paragraph += '. ';
+                } else if (data.employmentStatus === 'Unemployed') {
+                    paragraph += 'UNEMPLOYED AND RESIDES IN ' + data.location + '. ';
+                } else {
+                    paragraph += data.employmentStatus.toUpperCase() + '. ';
+                }
             }
 
-            // Employment
-            if (data.employmentStatus === 'Employed' && data.employerName) {
-                html += p.s.toUpperCase() + ' IS EMPLOYED AT ' + data.employerName.toUpperCase();
-                if (data.position) html += ' AS ' + data.position.toUpperCase();
-                html += '. ';
-            } else if (data.employmentStatus === 'Self-Employed' && data.tradeName) {
-                html += p.s.toUpperCase() + ' OWNS ' + data.tradeName.toUpperCase();
-                if (data.businessNature) html += ' ENGAGED IN ' + data.businessNature.toUpperCase();
-                html += '. ';
-            } else {
-                html += p.s.toUpperCase() + ' IS ' + data.employmentStatus.toUpperCase() + '. ';
-            }
-
-            // Source of funds
-            html += 'THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
+            // Source of funds and jewelry
+            paragraph += 'THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
             if (data.sourceOfFund === 'BUSINESS' && data.tradeName) {
-                html += ' FROM ' + data.tradeName.toUpperCase();
+                paragraph += ' FROM ' + data.tradeName;
             } else if (data.sourceOfFund === 'SALARY' && data.employerName) {
-                html += ' FROM ' + data.employerName.toUpperCase();
+                paragraph += ' FROM ' + data.employerName;
             }
-            html += '. ';
+            paragraph += '. ';
 
             // Jewelry source
-            if (data.jewelryOwner && data.jewelryOwner.toUpperCase() !== data.customerName) {
-                html += 'THE JEWELRY IS OWNED BY ' + data.jewelryOwner.toUpperCase();
-                if (data.ownerRelationship) html += ', ' + p.p.toUpperCase() + ' ' + data.ownerRelationship.toUpperCase();
-                html += '. ';
+            if (data.jewelryOwner && data.jewelryOwner !== data.customerName) {
+                paragraph += 'THE SOURCE OF THE JEWELRY IS ' + data.jewelryOwner;
+                if (data.ownerRelationship) paragraph += ', ' + p.p.toUpperCase() + ' ' + data.ownerRelationship;
+                paragraph += '. ';
                 if (data.jewelrySourceBusiness) {
-                    html += 'THE FUNDS CAME FROM ' + data.jewelrySourceBusiness.toUpperCase() + '. ';
+                    paragraph += 'THE FUNDS CAME FROM ' + data.jewelrySourceBusiness + '. ';
                 }
             } else {
-                html += 'THE JEWELRY IS FROM ' + data.sourceOfJewelry.toUpperCase() + '. ';
+                paragraph += 'THE SOURCE OF THE JEWELRY IS ' + data.sourceOfJewelry.toUpperCase() + '. ';
             }
 
-            // Purpose
-            html += 'THE PURPOSE IS ' + data.purpose + '. ';
+            // Purpose and Amount
+            paragraph += 'THE PURPOSE OF THE TRANSACTION IS ' + data.purpose + ' WITH A PRINCIPAL AMOUNT OF PHP ' + Number(data.principalAmount).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '. ';
+
+            // Location
+            paragraph += 'THE TRANSACTION TOOK PLACE IN ' + data.location + '. ';
 
             // Documents
             if (data.documents.length > 0) {
-                html += 'DOCUMENTS SUBMITTED: ' + data.documents.join(', ').toUpperCase() + '. ';
+                paragraph += data.documents.join(', ').toUpperCase() + ' WERE PROVIDED AS SUPPORTING DOCUMENTS. ';
             }
 
-            html += '</p>';
-
-            // Compliance
-            html += '<div style="margin-top:20px;padding-top:15px;border-top:2px dashed #ccc;">';
-            html += '<div style="font-weight:bold;color:#1e3a5f;margin-bottom:10px;">COMPLIANCE FINDINGS:</div>';
-
+            // Compliance findings
             if (data.amlAlerts !== 'None' || data.watchlist !== 'Clean') {
-                html += '<p>AML REVIEW: ';
-                if (data.amlAlerts !== 'None') html += 'FLAGGED ' + data.amlAlerts + '. ';
-                if (data.watchlist !== 'Clean') html += 'WATCHLIST: ' + data.watchlist + '. ';
-                html += '</p>';
+                paragraph += 'AML REVIEW: ';
+                if (data.amlAlerts !== 'None') paragraph += 'FLAGGED ' + data.amlAlerts + '. ';
+                if (data.watchlist !== 'Clean') paragraph += 'WATCHLIST: ' + data.watchlist + '. ';
             }
 
-            html += '<p>HISTORICAL REVIEW: ' + data.historical + '. VOLUME: ' + data.volume + '. ';
+            paragraph += 'HISTORICAL REVIEW INDICATES ' + data.historical + ' ACTIVITY WITH ' + data.volume + ' VOLUME. ';
+
+            // Final assessment
             if (data.volume === 'Proportionate' && data.historical === 'Normal' && data.amlAlerts === 'None' && data.watchlist === 'Clean') {
-                html += 'TRANSACTION IS CONSISTENT WITH PROFILE. NO RED FLAGS. ';
+                paragraph += 'THE SOURCE OF PAWNED ITEM, VOLUME AND VALUE OF TRANSACTIONS CORRESPOND TO ';
+                if (data.transactionType === 'Corporate') {
+                    paragraph += 'THE NATURE OF BUSINESS AND THE STATED PURPOSE OF THE TRANSACTION. ';
+                } else {
+                    paragraph += 'THE NATURE OF WORK AND FINANCIAL CAPACITY. ';
+                }
+                paragraph += 'FURTHERMORE, ' + data.customerName + ' HAS NO HISTORY OF SUSPICIOUS TRANSACTIONS AND HAS NO RECORD IN THE WATCHLIST SYSTEM. ';
             }
-            html += '</p></div>';
 
-            // Conclusion
-            html += '<div style="margin-top:20px;padding:15px;background:white;border-left:4px solid #d69e2e;font-style:italic;">';
-            html += '<strong>DISPOSITION:</strong> ';
+            // Disposition
             switch(data.disposition) {
-                case 'Clean': html += 'APPROVED. No suspicious indicators.'; break;
-                case 'Monitor': html += 'APPROVED WITH MONITORING. Enhanced observation required.'; break;
-                case 'Suspicious': html += 'HOLD. Further investigation needed.'; break;
-                case 'Reject': html += 'DECLINED. High risk factors identified.'; break;
+                case 'Clean': 
+                    paragraph += 'DISPOSITION: APPROVED. NO SUSPICIOUS INDICATORS IDENTIFIED.'; 
+                    break;
+                case 'Monitor': 
+                    paragraph += 'DISPOSITION: APPROVED WITH MONITORING. ENHANCED OBSERVATION REQUIRED.'; 
+                    break;
+                case 'Suspicious': 
+                    paragraph += 'DISPOSITION: HOLD. FURTHER INVESTIGATION NEEDED. GIVEN THE ABSENCE OF SUPPORTING BUSINESS DOCUMENTATION AND THE SUBSTANTIAL VOLUME OF PAWNED JEWELRY, THE TRANSACTIONS WERE ASSESSED AS SUSPICIOUS AND WERE SUBSEQUENTLY REPORTED TO THE AMLC IN ACCORDANCE WITH REGULATORY REQUIREMENTS.'; 
+                    break;
+                case 'Reject': 
+                    paragraph += 'DISPOSITION: DECLINED. HIGH RISK FACTORS IDENTIFIED.'; 
+                    break;
             }
-            if (data.remarks) html += '<br><br>Notes: ' + data.remarks;
-            if (data.analyst) html += '<br><br>Assessed by: <strong>' + data.analyst + '</strong>';
-            html += '</div></div>';
 
-            return html;
+            if (data.analyst) {
+                paragraph += ' ASSESSED BY: ' + data.analyst.toUpperCase() + '.';
+            }
+
+            return '<div class="assessment-header"><h2>TRANSACTION ASSESSMENT REPORT</h2><div>' + formatDate(data.date) + '</div></div><div class="assessment-body"><p style="text-align: justify;">' + paragraph + '</p></div>';
         }
 
         function formatDate(dateStr) {
