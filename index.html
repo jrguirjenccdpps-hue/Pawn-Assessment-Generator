@@ -34,11 +34,12 @@
         .hidden { display: none !important; }
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-left: 10px; }
         .status-clean { background: #c6f6d5; color: #22543d; }
-        .status-monitor { background: #feebc8; color: #744210; }
+        .status-falsepositive { background: #bee3f8; color: #2a4365; }
         .status-suspicious { background: #fed7d7; color: #742a2a; }
-        .status-reject { background: #e2e8f0; color: #1a202c; }
+        .status-str { background: #feb2b2; color: #742a2a; }
         @media print { body { background: white; } .panel:first-child { display: none; } .actions { display: none; } }
     </style>
+<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 </head>
@@ -246,6 +247,16 @@
                             <div class="checkbox-item"><input type="checkbox" id="doc6" value="Company ID"><label for="doc6">Company ID</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc7" value="Payslip"><label for="doc7">Payslip</label></div>
                         </div>
+                        <div class="form-group" style="margin-top: 12px;">
+                            <label>Document Status *</label>
+                            <select id="documentStatus" required>
+                                <option value="">Select</option>
+                                <option value="Complete">Complete - All required documents submitted</option>
+                                <option value="Incomplete">Incomplete - Pending documents</option>
+                                <option value="Verified">Verified - Authenticated and valid</option>
+                                <option value="Under Review">Under Review - Verification in progress</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-section">
@@ -295,10 +306,7 @@
                             <div class="form-group">
                                 <label>Disposition *</label>
                                 <select id="finalDisposition" required>
-                                    <option value="Clean">Clean</option>
-                                    <option value="Monitor">Monitor</option>
-                                    <option value="Suspicious">Suspicious</option>
-                                    <option value="Reject">Reject</option>
+                                    <option value="">Select Transaction Type First</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -347,17 +355,35 @@
                 const corporateFields = document.getElementById('corporateFields');
                 const repType = document.getElementById('representativeType');
                 const customerLabel = document.getElementById('customerLabel');
+                const dispositionSelect = document.getElementById('finalDisposition');
 
                 if (this.value === 'Corporate') {
                     corporateFields.classList.remove('hidden');
                     repType.required = true;
                     customerLabel.textContent = 'Representative Name *';
-                } else {
+
+                    // Corporate disposition options
+                    dispositionSelect.innerHTML = `
+                        <option value="">Select Disposition</option>
+                        <option value="Clean">Clean</option>
+                        <option value="FalsePositive">False Positive</option>
+                        <option value="Suspicious">Suspicious - Report as STR</option>
+                    `;
+                } else if (this.value === 'Individual') {
                     corporateFields.classList.add('hidden');
                     repType.required = false;
                     document.getElementById('beneficialOwnerGroup').classList.add('hidden');
                     document.getElementById('beneficialOwner').required = false;
                     customerLabel.textContent = 'Customer Name *';
+
+                    // Individual disposition options
+                    dispositionSelect.innerHTML = `
+                        <option value="">Select Disposition</option>
+                        <option value="FalsePositive">False Positive</option>
+                        <option value="Suspicious">Suspicious - Report as STR</option>
+                    `;
+                } else {
+                    dispositionSelect.innerHTML = `<option value="">Select Transaction Type First</option>`;
                 }
             });
 
@@ -406,6 +432,7 @@
             document.getElementById('jewelryOwnerGroup').classList.add('hidden');
             document.getElementById('customerLabel').textContent = 'Customer Name *';
             document.getElementById('assessmentDate').valueAsDate = new Date();
+            document.getElementById('finalDisposition').innerHTML = `<option value="">Select Transaction Type First</option>`;
         }
 
         function generateAssessment() {
@@ -450,6 +477,7 @@
                 jewelrySourceBusiness: document.getElementById('jewelrySourceBusiness').value.trim().toUpperCase(),
                 purpose: document.getElementById('transactionPurpose').value,
                 documents: docs,
+                documentStatus: document.getElementById('documentStatus').value,
                 amlAlerts: document.getElementById('amlAlerts').value,
                 watchlist: document.getElementById('watchlistStatus').value,
                 historical: document.getElementById('historicalReview').value,
@@ -532,6 +560,11 @@
                 paragraph += data.documents.join(', ').toUpperCase() + ' WERE PROVIDED AS SUPPORTING DOCUMENTS. ';
             }
 
+            // Document Status
+            if (data.documentStatus) {
+                paragraph += 'DOCUMENT STATUS: ' + data.documentStatus.toUpperCase() + '. ';
+            }
+
             // Compliance findings
             if (data.amlAlerts !== 'None' || data.watchlist !== 'Clean') {
                 paragraph += 'AML REVIEW: ';
@@ -555,16 +588,13 @@
             // Disposition
             switch(data.disposition) {
                 case 'Clean': 
-                    paragraph += 'DISPOSITION: APPROVED. NO SUSPICIOUS INDICATORS IDENTIFIED.'; 
+                    paragraph += 'DISPOSITION: CLEAN. THE ASSOCIATED CUSTOMER OF THE ALERT SHALL BE MARKED AS CLEAN FOR THAT PARTICULAR ALERT AND DATE ONLY. ALERT CAN STILL BE GENERATED IF THE CUSTOMER\'S ACCOUNT AND/OR TRANSACTION HIT/BREACHED A CERTAIN SCENARIO/S.'; 
                     break;
-                case 'Monitor': 
-                    paragraph += 'DISPOSITION: APPROVED WITH MONITORING. ENHANCED OBSERVATION REQUIRED.'; 
+                case 'FalsePositive': 
+                    paragraph += 'DISPOSITION: FALSE POSITIVE. THE ASSOCIATED CUSTOMER OF THE ALERT SHALL NOT BE TAGGED AS SUSPICIOUS AND THE SYSTEM SHALL NOT TRIGGER ALERT/S FOR SUCCEEDING TRANSACTIONS OR SCENARIOS FOR A SPECIFIED PERIOD.'; 
                     break;
                 case 'Suspicious': 
-                    paragraph += 'DISPOSITION: HOLD. FURTHER INVESTIGATION NEEDED. GIVEN THE ABSENCE OF SUPPORTING BUSINESS DOCUMENTATION AND THE SUBSTANTIAL VOLUME OF PAWNED JEWELRY, THE TRANSACTIONS WERE ASSESSED AS SUSPICIOUS AND WERE SUBSEQUENTLY REPORTED TO THE AMLC IN ACCORDANCE WITH REGULATORY REQUIREMENTS.'; 
-                    break;
-                case 'Reject': 
-                    paragraph += 'DISPOSITION: DECLINED. HIGH RISK FACTORS IDENTIFIED.'; 
+                    paragraph += 'DISPOSITION: SUSPICIOUS - REPORT AS STR. THE TRANSACTION AND ITS ASSOCIATED CUSTOMER WITH ALERT/S, REVIEWED/EVALUATED AS SUSPICIOUS, AN STR SHALL BE FILED/REPORTED TO THE AMLC IN ACCORDANCE WITH REGULATORY REQUIREMENTS.'; 
                     break;
             }
 
@@ -582,8 +612,15 @@
 
         function updateBadge(disposition) {
             const badge = document.getElementById('statusBadge');
-            badge.textContent = disposition.toUpperCase();
-            badge.className = 'status-badge status-' + disposition.toLowerCase();
+            const statusMap = {
+                'Clean': { text: 'CLEAN', class: 'status-clean' },
+                'FalsePositive': { text: 'FALSE POSITIVE', class: 'status-falsepositive' },
+                'Suspicious': { text: 'SUSPICIOUS - STR', class: 'status-str' }
+            };
+
+            const status = statusMap[disposition] || { text: 'DRAFT', class: 'status-clean' };
+            badge.textContent = status.text;
+            badge.className = 'status-badge ' + status.class;
         }
 
         function copyAssessment() {
