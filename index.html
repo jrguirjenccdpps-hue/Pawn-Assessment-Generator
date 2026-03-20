@@ -563,14 +563,14 @@
 
             // Document Status
             if (data.documentStatus) {
-                paragraph += 'DOCUMENT STATUS: ' + data.documentStatus.toUpperCase() + '. ';
+                paragraph += '' + data.documentStatus.toUpperCase() + '. ';
             }
 
             // Compliance findings
             if (data.amlAlerts !== 'None' || data.watchlist !== 'Clean') {
-                paragraph += 'AML REVIEW: ';
-                if (data.amlAlerts !== 'None') paragraph += 'FLAGGED ' + data.amlAlerts + '. ';
-                if (data.watchlist !== 'Clean') paragraph += 'WATCHLIST: ' + data.watchlist + '. ';
+                paragraph += '';
+                if (data.amlAlerts !== 'None') paragraph += '' + data.amlAlerts + '. ';
+                if (data.watchlist !== 'Clean') paragraph += '' + data.watchlist + '. ';
             }
 
             paragraph += 'HISTORICAL REVIEW INDICATES ' + data.historical + ' ACTIVITY WITH ' + data.volume + ' VOLUME. ';
