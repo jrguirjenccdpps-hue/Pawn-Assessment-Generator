@@ -7,8 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; max-width: 1400px; margin: 0 auto; padding: 20px; background: #f0f2f5; }
         .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-       @media (max-width: 1024px) { 
-    .container { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
         .panel { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
         .panel-header { background: #1e3a5f; color: white; padding: 15px 20px; font-weight: bold; }
         .panel-body { padding: 20px; max-height: 80vh; overflow-y: auto; }
@@ -38,15 +37,14 @@
         .status-falsepositive { background: #bee3f8; color: #2a4365; }
         .status-suspicious { background: #fed7d7; color: #742a2a; }
         .status-str { background: #feb2b2; color: #742a2a; }
-        @media print { body { background: white; } .panel:first-child { display: none; } .actions { display: none; } }
+        @media print { body { background: white; } .panel.form-panel { display: none; } .actions { display: none; } }
     </style>
-<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 </head>
 <body>
     <div class="container">
-        <div class="panel">
+        <div class="panel form-panel">
             <div class="panel-header">📋 Assessment Input Form</div>
             <div class="panel-body">
                 <form id="assessmentForm">
@@ -185,7 +183,7 @@
                                 <option value="Inheritance">Inheritance</option>
                                 <option value="Third Party">Third Party</option>
                                 <option value="Rematado Display">Rematado Display</option>
-                                <option value="AUTHORIZED BY THE OWNER">Authorization</option>
+                                <option value="AUTHORIZATION BY THE OWNER">Authorization</option>
                             </select>
                         </div>
                         <div id="jewelryOwnerGroup" class="hidden">
@@ -237,7 +235,7 @@
                                 <option value="TAKE OUT TRANSACTION ASSISSTED BY BRANCH">TAKE OUT TRANSACTION</option>
                                 <option value="CHANGE RECEIVER OF PAWNERS NAME">PAWNER'S NAME UPDATE</option>
                                 <option value="REMATADO SALE TRANSACTION">REMATADO SALE</option>
-                                 <option value="BILI SANGLA TRANSACTIONS">BILI SANGLA</option>
+                                <option value="BILI SANGLA TRANSACTIONS">BILI SANGLA</option>
                                 <option value="RENEWAL THRU AUTHORIZED REPRESENTATIVE">AUTHORIZED REPRESENTATIVE</option>
                             </select>
                         </div>
@@ -249,14 +247,13 @@
                             <div class="checkbox-item"><input type="checkbox" id="doc1" value="Business Permit"><label for="doc1">Business Permit</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc2" value="Authorization Letter"><label for="doc2">Auth Letter</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc3" value="SEC Registration"><label for="doc3">SEC Reg</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="doc4" value="Company ID><label for="doc3">COMPANY ID</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="doc5" value="VALID ID"><label for="doc3">VALID ID</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="doc6" value="DTI Registration"><label for="doc4">DTI Reg</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc4" value="Company ID"><label for="doc4">Company ID</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc5" value="VALID ID"><label for="doc5">VALID ID</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc6" value="DTI Registration"><label for="doc6">DTI Reg</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc7" value="Payslip"><label for="doc7">Payslip</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc8" value="BIR Certificate of Registration"><label for="doc8">BIR Certificate of Registration</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="doc9" value="Special Power of Attorney"><label for="doc8">Special Power of Attorney</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="doc10" value="Barangay Business Permit"><label for="doc8">Barangay Business Permit</label></div>
-                        </div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc9" value="Special Power of Attorney"><label for="doc9">Special Power of Attorney</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="doc10" value="Barangay Business Permit"><label for="doc10">Barangay Business Permit</label></div>
                         </div>
                         <div class="form-group" style="margin-top: 12px;">
                             <label>Document Status *</label>
@@ -645,5 +642,8 @@
             window.print();
         }
     </script>
+</body>
+</html>        <div class=
+    </div>
 </body>
 </html>
