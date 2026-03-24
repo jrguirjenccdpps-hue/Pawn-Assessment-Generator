@@ -18,6 +18,7 @@
         input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
         textarea { min-height: 60px; resize: vertical; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .checkbox-item { display: flex; align-items: center; gap: 6px; padding: 6px; background: white; border-radius: 4px; border: 1px solid #e2e8f0; }
         .checkbox-item input { width: auto; }
@@ -37,10 +38,10 @@
         .status-falsepositive { background: #bee3f8; color: #2a4365; }
         .status-suspicious { background: #fed7d7; color: #742a2a; }
         .status-str { background: #feb2b2; color: #742a2a; }
+        .doc-year-input { width: 80px !important; display: inline-block; margin-left: 8px; }
+        .approval-section { background: #e6fffa; border-left-color: #38b2ac; }
         @media print { body { background: white; } .panel.form-panel { display: none; } .actions { display: none; } }
     </style>
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
     <div class="container">
@@ -102,6 +103,19 @@
                                 <input type="text" id="beneficialOwner" placeholder="Name of owner who sent the representative">
                             </div>
                         </div>
+                        <!-- NEW: Corporate Representative Position and Nature of Work -->
+                        <div id="corporateRepFields" class="hidden">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Representative Position *</label>
+                                    <input type="text" id="repPosition" placeholder="e.g., Manager, Accountant">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nature of Work *</label>
+                                    <input type="text" id="repNatureOfWork" placeholder="e.g., Administrative, Finance">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-section">
@@ -138,9 +152,15 @@
                                 <label>Employer Name</label>
                                 <input type="text" id="employerName" placeholder="Company name">
                             </div>
-                            <div class="form-group">
-                                <label>Position</label>
-                                <input type="text" id="position" placeholder="Job title">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Position</label>
+                                    <input type="text" id="position" placeholder="Job title">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nature of Work</label>
+                                    <input type="text" id="natureOfWork" placeholder="e.g., Administrative, Sales">
+                                </div>
                             </div>
                         </div>
                         <div id="businessFields" class="hidden">
@@ -244,7 +264,11 @@
                     <div class="form-section">
                         <div class="section-title">Documents</div>
                         <div class="checkbox-group">
-                            <div class="checkbox-item"><input type="checkbox" id="doc1" value="Business Permit"><label for="doc1">Business Permit</label></div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="doc1" value="Business Permit" data-has-year="true">
+                                <label for="doc1">Business Permit</label>
+                                <input type="number" id="doc1Year" class="doc-year-input hidden" placeholder="Year" min="2000" max="2099">
+                            </div>
                             <div class="checkbox-item"><input type="checkbox" id="doc2" value="Authorization Letter"><label for="doc2">Auth Letter</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc3" value="SEC Registration"><label for="doc3">SEC Reg</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc4" value="Company ID"><label for="doc4">Company ID</label></div>
@@ -304,6 +328,31 @@
                                     <option value="High">High</option>
                                     <option value="Inconsistent">Inconsistent</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section approval-section">
+                        <div class="section-title">Area Office Approval</div>
+                        <div class="form-group">
+                            <label class="checkbox-item" style="background: transparent; border: none; padding: 0;">
+                                <input type="checkbox" id="verificationDone" style="width: auto;">
+                                <span style="margin-left: 8px; font-weight: 600;">Verification completed before starting assessment</span>
+                            </label>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Approved by Area Office</label>
+                                <select id="areaOfficeApproved">
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Pending">Pending Approval</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Name of Approver (Optional)</label>
+                                <input type="text" id="approverName" placeholder="Approver name">
                             </div>
                         </div>
                     </div>
@@ -370,7 +419,6 @@
                     repType.required = true;
                     customerLabel.textContent = 'Representative Name *';
 
-                    // Corporate disposition options
                     dispositionSelect.innerHTML = `
                         <option value="">Select Disposition</option>
                         <option value="Clean">Clean</option>
@@ -382,9 +430,11 @@
                     repType.required = false;
                     document.getElementById('beneficialOwnerGroup').classList.add('hidden');
                     document.getElementById('beneficialOwner').required = false;
+                    document.getElementById('corporateRepFields').classList.add('hidden');
+                    document.getElementById('repPosition').required = false;
+                    document.getElementById('repNatureOfWork').required = false;
                     customerLabel.textContent = 'Customer Name *';
 
-                    // Individual disposition options
                     dispositionSelect.innerHTML = `
                         <option value="">Select Disposition</option>
                         <option value="FalsePositive">False Positive</option>
@@ -395,18 +445,33 @@
                 }
             });
 
-            // Representative Type toggle for Beneficial Owner
+            // Representative Type toggle for Beneficial Owner and Rep Fields
             document.getElementById('representativeType').addEventListener('change', function() {
                 const boGroup = document.getElementById('beneficialOwnerGroup');
                 const boField = document.getElementById('beneficialOwner');
+                const repFields = document.getElementById('corporateRepFields');
+                const repPosition = document.getElementById('repPosition');
+                const repNature = document.getElementById('repNatureOfWork');
 
                 if (this.value === 'Authorized') {
                     boGroup.classList.remove('hidden');
                     boField.required = true;
-                } else {
+                    repFields.classList.remove('hidden');
+                    repPosition.required = true;
+                    repNature.required = true;
+                } else if (this.value === 'UBO') {
                     boGroup.classList.add('hidden');
                     boField.required = false;
                     boField.value = '';
+                    repFields.classList.remove('hidden');
+                    repPosition.required = true;
+                    repNature.required = true;
+                } else {
+                    boGroup.classList.add('hidden');
+                    boField.required = false;
+                    repFields.classList.add('hidden');
+                    repPosition.required = false;
+                    repNature.required = false;
                 }
             });
 
@@ -430,14 +495,27 @@
                     group.classList.add('hidden');
                 }
             });
+
+            // Business Permit year toggle
+            document.getElementById('doc1').addEventListener('change', function() {
+                const yearInput = document.getElementById('doc1Year');
+                if (this.checked) {
+                    yearInput.classList.remove('hidden');
+                } else {
+                    yearInput.classList.add('hidden');
+                    yearInput.value = '';
+                }
+            });
         }
 
         function resetForm() {
             document.getElementById('corporateFields').classList.add('hidden');
             document.getElementById('beneficialOwnerGroup').classList.add('hidden');
+            document.getElementById('corporateRepFields').classList.add('hidden');
             document.getElementById('employedFields').classList.add('hidden');
             document.getElementById('businessFields').classList.add('hidden');
             document.getElementById('jewelryOwnerGroup').classList.add('hidden');
+            document.getElementById('doc1Year').classList.add('hidden');
             document.getElementById('customerLabel').textContent = 'Customer Name *';
             document.getElementById('assessmentDate').valueAsDate = new Date();
             document.getElementById('finalDisposition').innerHTML = `<option value="">Select Transaction Type First</option>`;
@@ -460,7 +538,13 @@
 
         function collectData() {
             const docs = [];
-            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => docs.push(cb.value));
+            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => {
+                if (cb.id === 'doc1' && document.getElementById('doc1Year').value) {
+                    docs.push(document.getElementById('doc1Year').value + ' ' + cb.value);
+                } else if (cb.type === 'checkbox') {
+                    docs.push(cb.value);
+                }
+            });
 
             return {
                 transactionType: document.getElementById('transactionType').value,
@@ -468,6 +552,8 @@
                 representativeType: document.getElementById('representativeType').value,
                 beneficialOwner: document.getElementById('beneficialOwner').value.trim().toUpperCase(),
                 companyNature: document.getElementById('companyNature').value.trim().toUpperCase(),
+                repPosition: document.getElementById('repPosition').value.trim().toUpperCase(),
+                repNatureOfWork: document.getElementById('repNatureOfWork').value.trim().toUpperCase(),
                 customerName: document.getElementById('customerName').value.trim().toUpperCase(),
                 gender: document.getElementById('gender').value,
                 date: document.getElementById('assessmentDate').value,
@@ -476,6 +562,7 @@
                 employmentStatus: document.getElementById('employmentStatus').value,
                 employerName: document.getElementById('employerName').value.trim().toUpperCase(),
                 position: document.getElementById('position').value.trim().toUpperCase(),
+                natureOfWork: document.getElementById('natureOfWork').value.trim().toUpperCase(),
                 tradeName: document.getElementById('tradeName').value.trim().toUpperCase(),
                 businessNature: document.getElementById('businessNature').value.trim().toUpperCase(),
                 sourceOfFund: document.getElementById('sourceOfFund').value,
@@ -491,7 +578,10 @@
                 historical: document.getElementById('historicalReview').value,
                 volume: document.getElementById('volumeAssessment').value,
                 disposition: document.getElementById('finalDisposition').value,
-                analyst: document.getElementById('analystName').value.trim()
+                analyst: document.getElementById('analystName').value.trim(),
+                verificationDone: document.getElementById('verificationDone').checked,
+                areaOfficeApproved: document.getElementById('areaOfficeApproved').value,
+                approverName: document.getElementById('approverName').value.trim().toUpperCase()
             };
         }
 
@@ -512,11 +602,17 @@
                 paragraph += data.customerName + ' IS ';
                 if (data.representativeType === 'Authorized') {
                     paragraph += 'AN AUTHORIZED REPRESENTATIVE OF ' + data.companyName;
-                    if (data.companyNature) paragraph += ' ENGAGED IN ' + data.companyNature;
+                    if (data.companyNature) paragraph += ' THE NATURE OF WORK IS ' + data.companyNature;
+                    // ADDED: Representative position and nature of work for Authorized
+                    if (data.repPosition) paragraph += ', HOLDING THE POSITION OF ' + data.repPosition;
+                    if (data.repNatureOfWork) paragraph += ' THE NATURE OF WORK IS' + data.repNatureOfWork;
                     paragraph += '. ' + p.s.toUpperCase() + ' WAS AUTHORIZED BY ' + data.beneficialOwner + ' TO TRANSACT ON BEHALF OF THE COMPANY';
                 } else {
                     paragraph += 'THE ULTIMATE BENEFICIAL OWNER (UBO) OF ' + data.companyName;
-                    if (data.companyNature) paragraph += ' ENGAGED IN ' + data.companyNature;
+                    if (data.companyNature) paragraph += ' THE NATURE OF BUSINESS IS ' + data.companyNature;
+                    // ADDED: UBO position and nature of work
+                    if (data.repPosition) paragraph += ', HOLDING THE POSITION OF ' + data.repPosition;
+                    if (data.repNatureOfWork) paragraph += ' THE NATURE OF BUSINESS IS ' + data.repNatureOfWork;
                 }
                 paragraph += '. ';
             } else {
@@ -524,6 +620,7 @@
                 if (data.employmentStatus === 'Employed' && data.employerName) {
                     paragraph += 'EMPLOYED AT ' + data.employerName;
                     if (data.position) paragraph += ' AS ' + data.position;
+                    if (data.natureOfWork) paragraph += ' ENGAGED IN ' + data.natureOfWork;
                     paragraph += '. ';
                 } else if (data.employmentStatus === 'Self-Employed' && data.tradeName) {
                     paragraph += 'ENGAGED IN BUSINESS UNDER THE TRADE NAME ' + data.tradeName;
@@ -565,7 +662,7 @@
 
             // Documents
             if (data.documents.length > 0) {
-                paragraph += data.documents.join(', ').toUpperCase() + ' WERE PROVIDED AS SUPPORTING DOCUMENTS. ';
+                paragraph += data.documents.join(', ').toUpperCase() + ' HAD BEEN SUBMITTED. ';
             }
 
             // Document Status
@@ -606,6 +703,21 @@
                     break;
             }
 
+            // Area Office Approval
+            if (data.verificationDone) {
+                paragraph += ' VERIFICATION WAS COMPLETED BEFORE STARTING THE ASSESSMENT.';
+            }
+            
+            if (data.areaOfficeApproved === 'Yes') {
+                paragraph += ' THIS TRANSACTION WAS COORDINATED AND APPROVED BY AREA OFFICE';
+                if (data.approverName) {
+                    paragraph += ' - ' + data.approverName;
+                }
+                paragraph += '.';
+            } else if (data.areaOfficeApproved === 'Pending') {
+                paragraph += ' PENDING APPROVAL BY AREA OFFICE.';
+            }
+
             if (data.analyst) {
                 paragraph += ' ASSESSED BY: ' + data.analyst.toUpperCase() + '.';
             }
@@ -642,8 +754,5 @@
             window.print();
         }
     </script>
-</body>
-</html>        <div class=
-    </div>
 </body>
 </html>
