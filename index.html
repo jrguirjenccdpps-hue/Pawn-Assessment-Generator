@@ -103,19 +103,6 @@
                                 <input type="text" id="beneficialOwner" placeholder="Name of owner who sent the representative">
                             </div>
                         </div>
-                        <!-- NEW: Corporate Representative Position and Nature of Work -->
-                        <div id="corporateRepFields" class="hidden">
-                            <div class="grid-2">
-                                <div class="form-group">
-                                    <label>Representative Position *</label>
-                                    <input type="text" id="repPosition" placeholder="e.g., Manager, Accountant">
-                                </div>
-                                <div class="form-group">
-                                    <label>Nature of Work *</label>
-                                    <input type="text" id="repNatureOfWork" placeholder="e.g., Administrative, Finance">
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="form-section">
@@ -430,9 +417,6 @@
                     repType.required = false;
                     document.getElementById('beneficialOwnerGroup').classList.add('hidden');
                     document.getElementById('beneficialOwner').required = false;
-                    document.getElementById('corporateRepFields').classList.add('hidden');
-                    document.getElementById('repPosition').required = false;
-                    document.getElementById('repNatureOfWork').required = false;
                     customerLabel.textContent = 'Customer Name *';
 
                     dispositionSelect.innerHTML = `
@@ -445,33 +429,18 @@
                 }
             });
 
-            // Representative Type toggle for Beneficial Owner and Rep Fields
+            // Representative Type toggle for Beneficial Owner
             document.getElementById('representativeType').addEventListener('change', function() {
                 const boGroup = document.getElementById('beneficialOwnerGroup');
                 const boField = document.getElementById('beneficialOwner');
-                const repFields = document.getElementById('corporateRepFields');
-                const repPosition = document.getElementById('repPosition');
-                const repNature = document.getElementById('repNatureOfWork');
 
                 if (this.value === 'Authorized') {
                     boGroup.classList.remove('hidden');
                     boField.required = true;
-                    repFields.classList.remove('hidden');
-                    repPosition.required = true;
-                    repNature.required = true;
-                } else if (this.value === 'UBO') {
-                    boGroup.classList.add('hidden');
-                    boField.required = false;
-                    boField.value = '';
-                    repFields.classList.remove('hidden');
-                    repPosition.required = true;
-                    repNature.required = true;
                 } else {
                     boGroup.classList.add('hidden');
                     boField.required = false;
-                    repFields.classList.add('hidden');
-                    repPosition.required = false;
-                    repNature.required = false;
+                    boField.value = '';
                 }
             });
 
@@ -511,7 +480,6 @@
         function resetForm() {
             document.getElementById('corporateFields').classList.add('hidden');
             document.getElementById('beneficialOwnerGroup').classList.add('hidden');
-            document.getElementById('corporateRepFields').classList.add('hidden');
             document.getElementById('employedFields').classList.add('hidden');
             document.getElementById('businessFields').classList.add('hidden');
             document.getElementById('jewelryOwnerGroup').classList.add('hidden');
@@ -552,8 +520,6 @@
                 representativeType: document.getElementById('representativeType').value,
                 beneficialOwner: document.getElementById('beneficialOwner').value.trim().toUpperCase(),
                 companyNature: document.getElementById('companyNature').value.trim().toUpperCase(),
-                repPosition: document.getElementById('repPosition').value.trim().toUpperCase(),
-                repNatureOfWork: document.getElementById('repNatureOfWork').value.trim().toUpperCase(),
                 customerName: document.getElementById('customerName').value.trim().toUpperCase(),
                 gender: document.getElementById('gender').value,
                 date: document.getElementById('assessmentDate').value,
@@ -602,90 +568,83 @@
                 paragraph += data.customerName + ' IS ';
                 if (data.representativeType === 'Authorized') {
                     paragraph += 'AN AUTHORIZED REPRESENTATIVE OF ' + data.companyName;
-                    if (data.companyNature) paragraph += ' THE NATURE OF WORK IS ' + data.companyNature;
-                    // ADDED: Representative position and nature of work for Authorized
-                    if (data.repPosition) paragraph += ', HOLDING THE POSITION OF ' + data.repPosition;
-                    if (data.repNatureOfWork) paragraph += ' THE NATURE OF WORK IS' + data.repNatureOfWork;
+                    if (data.companyNature) paragraph += ', A COMPANY PRIMARILY ENGAGED IN ' + data.companyNature;
                     paragraph += '. ' + p.s.toUpperCase() + ' WAS AUTHORIZED BY ' + data.beneficialOwner + ' TO TRANSACT ON BEHALF OF THE COMPANY';
                 } else {
                     paragraph += 'THE ULTIMATE BENEFICIAL OWNER (UBO) OF ' + data.companyName;
-                    if (data.companyNature) paragraph += ' THE NATURE OF BUSINESS IS ' + data.companyNature;
-                    // ADDED: UBO position and nature of work
-                    if (data.repPosition) paragraph += ', HOLDING THE POSITION OF ' + data.repPosition;
-                    if (data.repNatureOfWork) paragraph += ' THE NATURE OF BUSINESS IS ' + data.repNatureOfWork;
+                    if (data.companyNature) paragraph += ', WHICH OPERATES IN THE FIELD OF ' + data.companyNature;
                 }
                 paragraph += '. ';
             } else {
                 paragraph += data.customerName + ' IS ';
                 if (data.employmentStatus === 'Employed' && data.employerName) {
-                    paragraph += 'EMPLOYED AT ' + data.employerName;
-                    if (data.position) paragraph += ' AS ' + data.position;
-                    if (data.natureOfWork) paragraph += ' ENGAGED IN ' + data.natureOfWork;
+                    paragraph += 'CURRENTLY EMPLOYED AT ' + data.employerName;
+                    if (data.position) paragraph += ', WORKING AS A ' + data.position;
+                    if (data.natureOfWork) paragraph += ' WITH PRIMARY RESPONSIBILITIES IN ' + data.natureOfWork;
                     paragraph += '. ';
                 } else if (data.employmentStatus === 'Self-Employed' && data.tradeName) {
-                    paragraph += 'ENGAGED IN BUSINESS UNDER THE TRADE NAME ' + data.tradeName;
-                    if (data.businessNature) paragraph += ' ENGAGED IN ' + data.businessNature;
+                    paragraph += 'A SELF-EMPLOYED INDIVIDUAL OPERATING UNDER THE TRADE NAME ' + data.tradeName;
+                    if (data.businessNature) paragraph += ', SPECIALIZING IN ' + data.businessNature;
                     paragraph += '. ';
                 } else if (data.employmentStatus === 'Unemployed') {
-                    paragraph += 'UNEMPLOYED AND RESIDES IN ' + data.location + '. ';
+                    paragraph += 'CURRENTLY UNEMPLOYED AND RESIDING IN ' + data.location + '. ';
                 } else {
                     paragraph += data.employmentStatus.toUpperCase() + '. ';
                 }
             }
 
             // Source of funds and jewelry
-            paragraph += 'THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
+            paragraph += 'THE CLIENT DECLARED THAT THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
             if (data.sourceOfFund === 'BUSINESS' && data.tradeName) {
-                paragraph += ' FROM ' + data.tradeName;
+                paragraph += ' GENERATED FROM ' + data.tradeName;
             } else if (data.sourceOfFund === 'SALARY' && data.employerName) {
-                paragraph += ' FROM ' + data.employerName;
+                paragraph += ' EARNED FROM ' + data.employerName;
             }
             paragraph += '. ';
 
             // Jewelry source
             if (data.jewelryOwner && data.jewelryOwner !== data.customerName) {
-                paragraph += 'THE SOURCE OF THE JEWELRY IS FROM ' + data.jewelryOwner;
-                if (data.ownerRelationship) paragraph += ', ' + p.p.toUpperCase() + ' ' + data.ownerRelationship;
+                paragraph += 'REGARDING THE JEWELRY, IT WAS PROVIDED BY ' + data.jewelryOwner;
+                if (data.ownerRelationship) paragraph += ', WHO IS ' + p.p + ' ' + data.ownerRelationship.toLowerCase();
                 paragraph += '. ';
                 if (data.jewelrySourceBusiness) {
-                    paragraph += 'THE FUNDS CAME FROM ' + data.jewelrySourceBusiness + '. ';
+                    paragraph += 'THE ITEM WAS ORIGINALLY ACQUIRED FROM ' + data.jewelrySourceBusiness + '. ';
                 }
             } else {
-                paragraph += 'THE SOURCE OF THE JEWELRY IS FROM ' + data.sourceOfJewelry.toUpperCase() + '. ';
+                paragraph += 'THE JEWELRY WAS SOURCED FROM ' + data.sourceOfJewelry.toUpperCase() + '. ';
             }
 
             // Purpose and Amount
-            paragraph += 'THE PURPOSE OF THE TRANSACTION IS ' + data.purpose + ' WITH A PRINCIPAL AMOUNT OF PHP ' + Number(data.principalAmount).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '. ';
+            paragraph += 'THIS TRANSACTION WAS INTENDED FOR ' + data.purpose + ', WITH A PRINCIPAL AMOUNT OF PHP ' + Number(data.principalAmount).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '. ';
 
             // Location
-            paragraph += 'THE TRANSACTION TOOK PLACE IN ' + data.location + '. ';
+            paragraph += 'THE TRANSACTION WAS PROCESSED AT OUR ' + data.location + ' BRANCH. ';
 
             // Documents
             if (data.documents.length > 0) {
-                paragraph += data.documents.join(', ').toUpperCase() + ' HAD BEEN SUBMITTED. ';
+                paragraph += 'FOR DOCUMENTATION PURPOSES, THE CLIENT SUBMITTED THE FOLLOWING: ' + data.documents.join(', ').toUpperCase() + '. ';
             }
 
             // Document Status
             if (data.documentStatus) {
-                paragraph += '' + data.documentStatus.toUpperCase() + '. ';
+                paragraph += data.documentStatus.toUpperCase() + '. ';
             }
 
             // Compliance findings
             if (data.amlAlerts !== 'None' || data.watchlist !== 'Clean') {
-                paragraph += '';
-                if (data.amlAlerts !== 'None') paragraph += '' + data.amlAlerts + '. ';
-                if (data.watchlist !== 'Clean') paragraph += '' + data.watchlist + '. ';
+                if (data.amlAlerts !== 'None') paragraph += 'NOTE: ' + data.amlAlerts + '. ';
+                if (data.watchlist !== 'Clean') paragraph += 'ADDITIONALLY, THE CLIENT IS FLAGGED AS ' + data.watchlist + ' ON THE WATCHLIST. ';
             }
 
-            paragraph += 'HISTORICAL REVIEW INDICATES ' + data.historical + ' ACTIVITY WITH ' + data.volume + ' VOLUME. ';
+            paragraph += 'BASED ON HISTORICAL REVIEW, THE CLIENT DEMONSTRATES ' + data.historical.toLowerCase() + ' ACTIVITY PATTERNS WITH ' + data.volume.toLowerCase() + ' TRANSACTION VOLUME. ';
 
             // Final assessment
             if (data.volume === 'Proportionate' && data.historical === 'Normal' && data.amlAlerts === 'None' && data.watchlist === 'Clean') {
-                paragraph += 'THE SOURCE OF PAWNED ITEM, VOLUME AND VALUE OF TRANSACTIONS CORRESPOND TO ';
+                paragraph += 'UPON CAREFUL EVALUATION, THE ORIGIN OF THE PAWNED ITEM, TOGETHER WITH THE TRANSACTION VOLUME AND VALUE, APPEARS CONSISTENT WITH ';
                 if (data.transactionType === 'Corporate') {
-                    paragraph += 'THE NATURE OF BUSINESS AND THE STATED PURPOSE OF THE TRANSACTION. ';
+                    paragraph += 'THE COMPANY\'S BUSINESS PROFILE AND THE STATED PURPOSE OF THE TRANSACTION. ';
                 } else {
-                    paragraph += 'THE NATURE OF WORK AND FINANCIAL CAPACITY. ';
+                    paragraph += 'THE CLIENT\'S EMPLOYMENT PROFILE AND DEMONSTRATED FINANCIAL CAPACITY. ';
                 }
                 paragraph += 'FURTHERMORE, ' + data.customerName + ' HAS NO HISTORY OF SUSPICIOUS TRANSACTIONS AND HAS NO RECORD IN THE WATCHLIST SYSTEM. ';
             }
