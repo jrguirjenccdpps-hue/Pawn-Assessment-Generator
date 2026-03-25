@@ -18,6 +18,7 @@
         input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
         textarea { min-height: 60px; resize: vertical; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .checkbox-item { display: flex; align-items: center; gap: 6px; padding: 6px; background: white; border-radius: 4px; border: 1px solid #e2e8f0; }
         .checkbox-item input { width: auto; }
@@ -37,10 +38,10 @@
         .status-falsepositive { background: #bee3f8; color: #2a4365; }
         .status-suspicious { background: #fed7d7; color: #742a2a; }
         .status-str { background: #feb2b2; color: #742a2a; }
+        .doc-year-input { width: 80px !important; display: inline-block; margin-left: 8px; }
+        .approval-section { background: #e6fffa; border-left-color: #38b2ac; }
         @media print { body { background: white; } .panel.form-panel { display: none; } .actions { display: none; } }
     </style>
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
     <div class="container">
@@ -135,22 +136,28 @@
                         </div>
                         <div id="employedFields" class="hidden">
                             <div class="form-group">
-                                <label>Employer Name</label>
-                                <input type="text" id="employerName" placeholder="Company name">
+                                <label>Employer Name *</label>
+                                <input type="text" id="employerName" placeholder="Company name" required>
                             </div>
-                            <div class="form-group">
-                                <label>Position</label>
-                                <input type="text" id="position" placeholder="Job title">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Position *</label>
+                                    <input type="text" id="position" placeholder="Job title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nature of Work</label>
+                                    <input type="text" id="natureOfWork" placeholder="e.g., Administrative, Sales">
+                                </div>
                             </div>
                         </div>
                         <div id="businessFields" class="hidden">
                             <div class="form-group">
-                                <label>Trade Name</label>
-                                <input type="text" id="tradeName" placeholder="Business name">
+                                <label>Trade Name *</label>
+                                <input type="text" id="tradeName" placeholder="Business name" required>
                             </div>
                             <div class="form-group">
-                                <label>Nature</label>
-                                <input type="text" id="businessNature" placeholder="e.g., Retail">
+                                <label>Nature *</label>
+                                <input type="text" id="businessNature" placeholder="e.g., Retail" required>
                             </div>
                         </div>
                     </div>
@@ -244,7 +251,11 @@
                     <div class="form-section">
                         <div class="section-title">Documents</div>
                         <div class="checkbox-group">
-                            <div class="checkbox-item"><input type="checkbox" id="doc1" value="Business Permit"><label for="doc1">Business Permit</label></div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="doc1" value="Business Permit" data-has-year="true">
+                                <label for="doc1">Business Permit</label>
+                                <input type="number" id="doc1Year" class="doc-year-input hidden" placeholder="Year" min="2000" max="2099">
+                            </div>
                             <div class="checkbox-item"><input type="checkbox" id="doc2" value="Authorization Letter"><label for="doc2">Auth Letter</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc3" value="SEC Registration"><label for="doc3">SEC Reg</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="doc4" value="Company ID"><label for="doc4">Company ID</label></div>
@@ -304,6 +315,31 @@
                                     <option value="High">High</option>
                                     <option value="Inconsistent">Inconsistent</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section approval-section">
+                        <div class="section-title">Area Office Approval</div>
+                        <div class="form-group">
+                            <label class="checkbox-item" style="background: transparent; border: none; padding: 0;">
+                                <input type="checkbox" id="verificationDone" style="width: auto;">
+                                <span style="margin-left: 8px; font-weight: 600;">Verification completed before starting assessment</span>
+                            </label>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Approved by Area Office</label>
+                                <select id="areaOfficeApproved">
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Pending">Pending Approval</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Name of Approver (Optional)</label>
+                                <input type="text" id="approverName" placeholder="Approver name">
                             </div>
                         </div>
                     </div>
@@ -370,7 +406,6 @@
                     repType.required = true;
                     customerLabel.textContent = 'Representative Name *';
 
-                    // Corporate disposition options
                     dispositionSelect.innerHTML = `
                         <option value="">Select Disposition</option>
                         <option value="Clean">Clean</option>
@@ -384,7 +419,6 @@
                     document.getElementById('beneficialOwner').required = false;
                     customerLabel.textContent = 'Customer Name *';
 
-                    // Individual disposition options
                     dispositionSelect.innerHTML = `
                         <option value="">Select Disposition</option>
                         <option value="FalsePositive">False Positive</option>
@@ -410,14 +444,32 @@
                 }
             });
 
-            // Employment Status toggle
+            // Employment Status toggle - FIXED: Made position required for employed/OFW
             document.getElementById('employmentStatus').addEventListener('change', function() {
-                document.getElementById('employedFields').classList.add('hidden');
-                document.getElementById('businessFields').classList.add('hidden');
+                const employedFields = document.getElementById('employedFields');
+                const businessFields = document.getElementById('businessFields');
+                const employerName = document.getElementById('employerName');
+                const position = document.getElementById('position');
+                const tradeName = document.getElementById('tradeName');
+                const businessNature = document.getElementById('businessNature');
+                
+                employedFields.classList.add('hidden');
+                businessFields.classList.add('hidden');
+                
+                // Reset required attributes
+                employerName.required = false;
+                position.required = false;
+                tradeName.required = false;
+                businessNature.required = false;
+
                 if (this.value === 'Employed' || this.value === 'Overseas Worker') {
-                    document.getElementById('employedFields').classList.remove('hidden');
+                    employedFields.classList.remove('hidden');
+                    employerName.required = true;
+                    position.required = true; // Position is now required
                 } else if (this.value === 'Self-Employed') {
-                    document.getElementById('businessFields').classList.remove('hidden');
+                    businessFields.classList.remove('hidden');
+                    tradeName.required = true;
+                    businessNature.required = true;
                 }
             });
 
@@ -430,6 +482,17 @@
                     group.classList.add('hidden');
                 }
             });
+
+            // Business Permit year toggle
+            document.getElementById('doc1').addEventListener('change', function() {
+                const yearInput = document.getElementById('doc1Year');
+                if (this.checked) {
+                    yearInput.classList.remove('hidden');
+                } else {
+                    yearInput.classList.add('hidden');
+                    yearInput.value = '';
+                }
+            });
         }
 
         function resetForm() {
@@ -438,9 +501,16 @@
             document.getElementById('employedFields').classList.add('hidden');
             document.getElementById('businessFields').classList.add('hidden');
             document.getElementById('jewelryOwnerGroup').classList.add('hidden');
+            document.getElementById('doc1Year').classList.add('hidden');
             document.getElementById('customerLabel').textContent = 'Customer Name *';
             document.getElementById('assessmentDate').valueAsDate = new Date();
             document.getElementById('finalDisposition').innerHTML = `<option value="">Select Transaction Type First</option>`;
+            
+            // Reset required attributes
+            document.getElementById('employerName').required = false;
+            document.getElementById('position').required = false;
+            document.getElementById('tradeName').required = false;
+            document.getElementById('businessNature').required = false;
         }
 
         function generateAssessment() {
@@ -460,7 +530,13 @@
 
         function collectData() {
             const docs = [];
-            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => docs.push(cb.value));
+            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => {
+                if (cb.id === 'doc1' && document.getElementById('doc1Year').value) {
+                    docs.push(document.getElementById('doc1Year').value + ' ' + cb.value);
+                } else if (cb.type === 'checkbox') {
+                    docs.push(cb.value);
+                }
+            });
 
             return {
                 transactionType: document.getElementById('transactionType').value,
@@ -476,6 +552,7 @@
                 employmentStatus: document.getElementById('employmentStatus').value,
                 employerName: document.getElementById('employerName').value.trim().toUpperCase(),
                 position: document.getElementById('position').value.trim().toUpperCase(),
+                natureOfWork: document.getElementById('natureOfWork').value.trim().toUpperCase(),
                 tradeName: document.getElementById('tradeName').value.trim().toUpperCase(),
                 businessNature: document.getElementById('businessNature').value.trim().toUpperCase(),
                 sourceOfFund: document.getElementById('sourceOfFund').value,
@@ -491,7 +568,10 @@
                 historical: document.getElementById('historicalReview').value,
                 volume: document.getElementById('volumeAssessment').value,
                 disposition: document.getElementById('finalDisposition').value,
-                analyst: document.getElementById('analystName').value.trim()
+                analyst: document.getElementById('analystName').value.trim(),
+                verificationDone: document.getElementById('verificationDone').checked,
+                areaOfficeApproved: document.getElementById('areaOfficeApproved').value,
+                approverName: document.getElementById('approverName').value.trim().toUpperCase()
             };
         }
 
@@ -512,83 +592,90 @@
                 paragraph += data.customerName + ' IS ';
                 if (data.representativeType === 'Authorized') {
                     paragraph += 'AN AUTHORIZED REPRESENTATIVE OF ' + data.companyName;
-                    if (data.companyNature) paragraph += ' ENGAGED IN ' + data.companyNature;
+                    if (data.companyNature) paragraph += ', A COMPANY PRIMARILY ENGAGED IN ' + data.companyNature;
                     paragraph += '. ' + p.s.toUpperCase() + ' WAS AUTHORIZED BY ' + data.beneficialOwner + ' TO TRANSACT ON BEHALF OF THE COMPANY';
                 } else {
                     paragraph += 'THE ULTIMATE BENEFICIAL OWNER (UBO) OF ' + data.companyName;
-                    if (data.companyNature) paragraph += ' ENGAGED IN ' + data.companyNature;
+                    if (data.companyNature) paragraph += ', WHICH OPERATES IN THE FIELD OF ' + data.companyNature;
                 }
                 paragraph += '. ';
             } else {
                 paragraph += data.customerName + ' IS ';
                 if (data.employmentStatus === 'Employed' && data.employerName) {
-                    paragraph += 'EMPLOYED AT ' + data.employerName;
-                    if (data.position) paragraph += ' AS ' + data.position;
+                    paragraph += 'CURRENTLY EMPLOYED AT ' + data.employerName;
+                    // FIXED: Position is now always shown when employed (required field)
+                    paragraph += ', HOLDING THE POSITION OF ' + (data.position || 'AN EMPLOYEE');
+                    if (data.natureOfWork) paragraph += ' WITH PRIMARY RESPONSIBILITIES IN ' + data.natureOfWork;
+                    paragraph += '. ';
+                } else if (data.employmentStatus === 'Overseas Worker') {
+                    paragraph += 'AN OVERSEAS FILIPINO WORKER (OFW) CURRENTLY EMPLOYED AT ' + data.employerName;
+                    // FIXED: Position is now always shown for OFW (required field)
+                    paragraph += ', WORKING AS A ' + (data.position || 'AN OFW');
+                    if (data.natureOfWork) paragraph += ' SPECIALIZING IN ' + data.natureOfWork;
                     paragraph += '. ';
                 } else if (data.employmentStatus === 'Self-Employed' && data.tradeName) {
-                    paragraph += 'ENGAGED IN BUSINESS UNDER THE TRADE NAME ' + data.tradeName;
-                    if (data.businessNature) paragraph += ' ENGAGED IN ' + data.businessNature;
+                    paragraph += 'A SELF-EMPLOYED INDIVIDUAL OPERATING UNDER THE TRADE NAME ' + data.tradeName;
+                    if (data.businessNature) paragraph += ', SPECIALIZING IN ' + data.businessNature;
                     paragraph += '. ';
                 } else if (data.employmentStatus === 'Unemployed') {
-                    paragraph += 'UNEMPLOYED AND RESIDES IN ' + data.location + '. ';
+                    paragraph += 'CURRENTLY UNEMPLOYED AND RESIDING IN ' + data.location + '. ';
                 } else {
                     paragraph += data.employmentStatus.toUpperCase() + '. ';
                 }
             }
 
             // Source of funds and jewelry
-            paragraph += 'THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
+            paragraph += 'THE CLIENT DECLARED THAT THE SOURCE OF FUNDS IS ' + data.sourceOfFund;
             if (data.sourceOfFund === 'BUSINESS' && data.tradeName) {
-                paragraph += ' FROM ' + data.tradeName;
+                paragraph += ' GENERATED FROM ' + data.tradeName;
             } else if (data.sourceOfFund === 'SALARY' && data.employerName) {
-                paragraph += ' FROM ' + data.employerName;
+                paragraph += ' EARNED FROM ' + data.employerName;
             }
             paragraph += '. ';
 
             // Jewelry source
             if (data.jewelryOwner && data.jewelryOwner !== data.customerName) {
-                paragraph += 'THE SOURCE OF THE JEWELRY IS FROM ' + data.jewelryOwner;
-                if (data.ownerRelationship) paragraph += ', ' + p.p.toUpperCase() + ' ' + data.ownerRelationship;
+                paragraph += 'REGARDING THE JEWELRY, IT WAS PROVIDED BY ' + data.jewelryOwner;
+                if (data.ownerRelationship) paragraph += ', WHO IS ' + p.p + ' ' + data.ownerRelationship.toLowerCase();
                 paragraph += '. ';
                 if (data.jewelrySourceBusiness) {
-                    paragraph += 'THE FUNDS CAME FROM ' + data.jewelrySourceBusiness + '. ';
+                    paragraph += 'THE ITEM WAS ORIGINALLY ACQUIRED FROM ' + data.jewelrySourceBusiness + '. ';
                 }
             } else {
-                paragraph += 'THE SOURCE OF THE JEWELRY IS FROM ' + data.sourceOfJewelry.toUpperCase() + '. ';
+                paragraph += 'THE JEWELRY WAS SOURCED FROM ' + data.sourceOfJewelry.toUpperCase() + '. ';
             }
 
             // Purpose and Amount
-            paragraph += 'THE PURPOSE OF THE TRANSACTION IS ' + data.purpose + ' WITH A PRINCIPAL AMOUNT OF PHP ' + Number(data.principalAmount).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '. ';
+            paragraph += 'THIS TRANSACTION WAS INTENDED FOR ' + data.purpose + ', WITH A PRINCIPAL AMOUNT OF PHP ' + Number(data.principalAmount).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '. ';
 
             // Location
-            paragraph += 'THE TRANSACTION TOOK PLACE IN ' + data.location + '. ';
+            paragraph += 'THE TRANSACTION WAS PROCESSED AT OUR ' + data.location + ' BRANCH. ';
 
             // Documents
             if (data.documents.length > 0) {
-                paragraph += data.documents.join(', ').toUpperCase() + ' WERE PROVIDED AS SUPPORTING DOCUMENTS. ';
+                paragraph += 'FOR DOCUMENTATION PURPOSES, THE CLIENT SUBMITTED THE FOLLOWING: ' + data.documents.join(', ').toUpperCase() + '. ';
             }
 
             // Document Status
             if (data.documentStatus) {
-                paragraph += '' + data.documentStatus.toUpperCase() + '. ';
+                paragraph += data.documentStatus.toUpperCase() + '. ';
             }
 
             // Compliance findings
             if (data.amlAlerts !== 'None' || data.watchlist !== 'Clean') {
-                paragraph += '';
-                if (data.amlAlerts !== 'None') paragraph += '' + data.amlAlerts + '. ';
-                if (data.watchlist !== 'Clean') paragraph += '' + data.watchlist + '. ';
+                if (data.amlAlerts !== 'None') paragraph += 'NOTE: ' + data.amlAlerts + '. ';
+                if (data.watchlist !== 'Clean') paragraph += 'ADDITIONALLY, THE CLIENT IS FLAGGED AS ' + data.watchlist + ' ON THE WATCHLIST. ';
             }
 
-            paragraph += 'HISTORICAL REVIEW INDICATES ' + data.historical + ' ACTIVITY WITH ' + data.volume + ' VOLUME. ';
+            paragraph += 'BASED ON HISTORICAL REVIEW, THE CLIENT DEMONSTRATES ' + data.historical.toLowerCase() + ' ACTIVITY PATTERNS WITH ' + data.volume.toLowerCase() + ' TRANSACTION VOLUME. ';
 
             // Final assessment
             if (data.volume === 'Proportionate' && data.historical === 'Normal' && data.amlAlerts === 'None' && data.watchlist === 'Clean') {
-                paragraph += 'THE SOURCE OF PAWNED ITEM, VOLUME AND VALUE OF TRANSACTIONS CORRESPOND TO ';
+                paragraph += 'UPON CAREFUL EVALUATION, THE ORIGIN OF THE PAWNED ITEM, TOGETHER WITH THE TRANSACTION VOLUME AND VALUE, APPEARS CONSISTENT WITH ';
                 if (data.transactionType === 'Corporate') {
-                    paragraph += 'THE NATURE OF BUSINESS AND THE STATED PURPOSE OF THE TRANSACTION. ';
+                    paragraph += 'THE COMPANY\'S BUSINESS PROFILE AND THE STATED PURPOSE OF THE TRANSACTION. ';
                 } else {
-                    paragraph += 'THE NATURE OF WORK AND FINANCIAL CAPACITY. ';
+                    paragraph += 'THE CLIENT\'S EMPLOYMENT PROFILE AND DEMONSTRATED FINANCIAL CAPACITY. ';
                 }
                 paragraph += 'FURTHERMORE, ' + data.customerName + ' HAS NO HISTORY OF SUSPICIOUS TRANSACTIONS AND HAS NO RECORD IN THE WATCHLIST SYSTEM. ';
             }
@@ -604,6 +691,21 @@
                 case 'Suspicious': 
                     paragraph += 'REPORT AS STR. THE TRANSACTION AND ITS ASSOCIATED CUSTOMER WITH ALERT/S, REVIEWED/EVALUATED AS SUSPICIOUS, AN STR SHALL BE FILED/REPORTED TO THE AMLC IN ACCORDANCE WITH REGULATORY REQUIREMENTS.'; 
                     break;
+            }
+
+            // Area Office Approval
+            if (data.verificationDone) {
+                paragraph += ' VERIFICATION WAS COMPLETED BEFORE STARTING THE ASSESSMENT.';
+            }
+            
+            if (data.areaOfficeApproved === 'Yes') {
+                paragraph += ' THIS TRANSACTION WAS COORDINATED AND APPROVED BY AREA OFFICE';
+                if (data.approverName) {
+                    paragraph += ' - ' + data.approverName;
+                }
+                paragraph += '.';
+            } else if (data.areaOfficeApproved === 'Pending') {
+                paragraph += ' PENDING APPROVAL BY AREA OFFICE.';
             }
 
             if (data.analyst) {
@@ -642,8 +744,5 @@
             window.print();
         }
     </script>
-</body>
-</html>        <div class=
-    </div>
 </body>
 </html>
