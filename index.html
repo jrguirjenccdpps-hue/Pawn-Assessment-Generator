@@ -571,7 +571,7 @@
                     if (data.companyNature) paragraph += ', A COMPANY PRIMARILY ENGAGED IN ' + data.companyNature;
                     paragraph += '. ' + p.s.toUpperCase() + ' WAS AUTHORIZED BY ' + data.beneficialOwner + ' TO TRANSACT ON BEHALF OF THE COMPANY';
                 } else {
-                    paragraph += 'THE ULTIMATE BENEFICIAL OWNER (UBO) OF ' + data.companyName;
+                    paragraph += 'IS ENGAGE' + data.companyName;
                     if (data.companyNature) paragraph += ', WHICH OPERATES IN THE FIELD OF ' + data.companyNature;
                 }
                 paragraph += '. ';
@@ -622,7 +622,7 @@
 
             // Documents
             if (data.documents.length > 0) {
-                paragraph += 'FOR DOCUMENTATION PURPOSES, THE CLIENT SUBMITTED THE FOLLOWING: ' + data.documents.join(', ').toUpperCase() + '. ';
+                paragraph += '' + data.documents.join(', ').toUpperCase() + '. ';
             }
 
             // Document Status
@@ -652,19 +652,19 @@
             // Disposition
             switch(data.disposition) {
                 case 'Clean': 
-                    paragraph += 'THE ASSOCIATED CUSTOMER OF THE ALERT SHALL BE MARKED AS CLEAN FOR THAT PARTICULAR ALERT AND DATE ONLY. ALERT CAN STILL BE GENERATED IF THE CUSTOMER\'S ACCOUNT AND/OR TRANSACTION HIT/BREACHED A CERTAIN SCENARIO/S.'; 
+                    paragraph += ''; 
                     break;
                 case 'FalsePositive': 
-                    paragraph += 'THE ASSOCIATED CUSTOMER OF THE ALERT SHALL NOT BE TAGGED AS SUSPICIOUS AND THE SYSTEM SHALL NOT TRIGGER ALERT/S FOR SUCCEEDING TRANSACTIONS OR SCENARIOS FOR A SPECIFIED PERIOD.'; 
+                    paragraph += ''; 
                     break;
                 case 'Suspicious': 
-                    paragraph += 'REPORT AS STR. THE TRANSACTION AND ITS ASSOCIATED CUSTOMER WITH ALERT/S, REVIEWED/EVALUATED AS SUSPICIOUS, AN STR SHALL BE FILED/REPORTED TO THE AMLC IN ACCORDANCE WITH REGULATORY REQUIREMENTS.'; 
+                    paragraph += ''; 
                     break;
             }
 
             // Area Office Approval
             if (data.verificationDone) {
-                paragraph += ' VERIFICATION WAS COMPLETED BEFORE STARTING THE ASSESSMENT.';
+                paragraph += '';
             }
             
             if (data.areaOfficeApproved === 'Yes') {
